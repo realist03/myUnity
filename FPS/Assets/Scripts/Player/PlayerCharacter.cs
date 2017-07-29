@@ -36,6 +36,8 @@ public class PlayerCharacter : PlayerBehaviour
     [Range(0f, 1f)]
     private float airControl = 0.15f;
 
+    float timer;
+
     private CharacterController cc;
     private float desiredSpeed;
     private Vector3 velocityCurrent;
@@ -49,6 +51,8 @@ public class PlayerCharacter : PlayerBehaviour
     {
         cc = GetComponent<CharacterController>();
         Player.jump.AddStartHandle(StartJumpHandle);
+
+        Player.reFill.AddStartHandle(ReFill);
 
         Player.attackOnce.SetHandle(() => OnAttack(false));
 
@@ -73,6 +77,7 @@ public class PlayerCharacter : PlayerBehaviour
 
         return false;
     }
+
 
     private float CalculateJumpSpeed(float heightToReach)
     {
@@ -112,10 +117,18 @@ public class PlayerCharacter : PlayerBehaviour
 
         var weapon = equippedWeapon as HitscanWeapon;
 
-        if (weapon.bulletsCount.Get() <= 0)
+        timer += Time.deltaTime;
+
+        if (weapon.bulletsCount.Get() == 0)
+        {
+            Player.reFill.Start();
+        }
+        if (Player.reFill.Active == true && timer >= 0.3f )
         {
             ReFill();
         }
+
+        //weapon.
     }
 
     private void UpdateMovement()
@@ -249,31 +262,31 @@ public class PlayerCharacter : PlayerBehaviour
     public bool ReFill()
     {
         
-        Player.reFillStart.Set(true);
-        var currentRate = Player.reFillRate.Get();
         var weapon = equippedWeapon as HitscanWeapon;
 
         if(weapon.totalCount.Get() == 0)
         {
+            Player.reFill.DirectStop();
+
             return false;
         }
 
-        for (int i = 0; i < 6; i++)
+        if (weapon.bulletsCount.Get() == 6)
         {
-            var currentCount = weapon.bulletsCount.Get();
-            var currentTotal = weapon.totalCount.Get();
-            Player.reFillRate.Set(currentRate + 1);
-            weapon.totalCount.Set(currentTotal - 1);
-            weapon.bulletsCount.Set(currentCount + 1);
-        }
+            Player.reFill.DirectStop();
 
-        if (Player.reFillRate.Get() == 6)
-        {
-            Player.reFillStart.Set(false);
-
-            return true;
-        }
-        else
             return false;
+        }
+
+
+        var currentCount = weapon.bulletsCount.Get();
+        var currentTotal = weapon.totalCount.Get();
+
+        weapon.totalCount.Set(currentTotal - 1);
+        weapon.bulletsCount.Set(currentCount + 1);
+        timer = 0;
+
+
+        return true;
     }
 }

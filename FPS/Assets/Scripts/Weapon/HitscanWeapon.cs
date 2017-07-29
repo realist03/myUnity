@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class HitscanWeapon : WeaponBehaviour
@@ -59,10 +60,16 @@ public class HitscanWeapon : WeaponBehaviour
     [SerializeField]
     private float shotDuration = 0.22f;
 
+    [SerializeField]
+    private GameObject hitPoint;
+
+    [SerializeField]
+    private Image post;
+
+
     public Value<int> bulletsCount = new Value<int>(6);
 
     public Value<int> totalCount = new Value<int>(0);
-
 
     public override bool AttackOnceHandle(Camera camera)
     {
@@ -116,7 +123,6 @@ public class HitscanWeapon : WeaponBehaviour
         if (Physics.Raycast(ray, out hitInfo, distanceMax, damageMax, QueryTriggerInteraction.Ignore))
         {
             float impulse = rayImpact.GetImpulseAtDistance(hitInfo.distance, distanceMax);
-
             //伤害
             float damage = rayImpact.GetDamageAtDistance(hitInfo.distance, distanceMax);
             var damageable = hitInfo.collider.GetComponent<IDamageable>();
@@ -129,6 +135,7 @@ public class HitscanWeapon : WeaponBehaviour
             {
                 hitInfo.rigidbody.AddForceAtPosition(ray.direction * impulse, hitInfo.point, ForceMode.Impulse);
             }
+            Debug.DrawLine(ray.origin, hitInfo.point);
 
             //音效
             if (GameplayStatics.SurfaceDatabase)
@@ -137,6 +144,12 @@ public class HitscanWeapon : WeaponBehaviour
 
                 data.PlaySound(SoundsPlayer.Selection.Randomly, Surface.ResponseType.BulletImpact, 1f, hitInfo.point);
             }
+
+            GameObject hit;
+            hit = Instantiate(hitPoint, hitInfo.point,Quaternion.identity);
+            hit.gameObject.SetActive(true);
+            Destroy(hit, 5);
+
         }
 
         if (tracer)
@@ -183,4 +196,9 @@ public class HitscanWeapon : WeaponBehaviour
         }
         return true;
     }
+
+    //public void Post()
+    //{
+    //    Physics.Raycast(transform.forward);
+    //}
 }

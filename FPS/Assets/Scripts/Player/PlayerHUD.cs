@@ -18,12 +18,13 @@ public class PlayerHUD : MonoBehaviour
 
     public Slider reFill;
 
+    public Image post;
     private void Awake()
     {
         weapon = FindObjectOfType<HitscanWeapon>();
         GameplayStatics.LocalPlayer.health.AddChangedListener(ChangeHP);
         weapon.bulletsCount.AddChangedListener(ChangeCount);
-        weapon.totalCount.AddChangedListener(ReFillCount);
+        weapon.totalCount.AddChangedListener(ChangeTotalCount);
     }
 
     void ChangeHP()
@@ -40,30 +41,27 @@ public class PlayerHUD : MonoBehaviour
         countText.text = currentCount.ToString();
     }
 
-    void ReFillCount()
+    void ChangeTotalCount()
     {
-        var totalCurrentCount = weapon.totalCount.Get();
-        totalCount.text = totalCurrentCount.ToString();
-        if(GameplayStatics.LocalPlayer.reFillStart.Get() == true)
+        var currentCount = weapon.totalCount.Get();
+        totalCount.text = currentCount.ToString();
+    }
+
+    void Post()
+    {
+        
+    }
+    private void Update()
+    {
+        if (GameplayStatics.LocalPlayer.reFill.Active == true)
         {
             reFill.gameObject.SetActive(true);
-            reFill.value = GameplayStatics.LocalPlayer.reFillRate.Get();
+            reFill.value = weapon.bulletsCount.Get();
         }
-        if (GameplayStatics.LocalPlayer.reFillStart.Get() == false)
+        if (GameplayStatics.LocalPlayer.reFill.Active == false)
         {
             reFill.gameObject.SetActive(false);
         }
-
     }
 
-
-    void Start ()
-    {
-		
-	}
-	
-	void Update ()
-    {
-		
-	}
 }

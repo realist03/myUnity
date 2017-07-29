@@ -11,9 +11,9 @@ public class PlayerState : ActorState
 
     public Value<bool> viewLocked = new Value<bool>(false);
 
-    public Value<bool> reFillStart = new Value<bool>(false);
-
     public Value<float> reFillRate = new Value<float>(0);
+
+    public Activity reFill = new Activity();
 
     public Activity jump = new Activity();
 

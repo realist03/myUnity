@@ -16,7 +16,7 @@ public class BulletsBox : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            weapon.SupplementBullets(supplementCount);
+            weapon.SupplementBullets(supplementCount); 
         }
     }
 
