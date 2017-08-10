@@ -6,7 +6,6 @@ using System.Text;
 
 public class Pos
 {
-    bool ifFind = false;
     public int x = 0;
     public int y = 0;
     public Pos()
@@ -35,10 +34,30 @@ public class SearchData
 {
     public int step;
 
+    public SearchData parent;
+
+    public Pos pPos;
+
     public SearchData(int step)
     {
         this.step = step;
     }
+    public SearchData(int step,Pos pPos)
+    {
+        this.step = step;
+        this.parent.pPos = pPos;
+    }
+    public bool Equals(SearchData other)
+    {
+        if (step == other.step)
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+
+
 }
 
 public class Map : MonoBehaviour
@@ -63,6 +82,7 @@ public class Map : MonoBehaviour
     SearchData[,] sData = new SearchData[wide,height];
 
     List<Pos> wait = new List<Pos>();
+    List<Pos> path = new List<Pos>();
     Pos to;
     Pos thisP;
 	void Start ()
@@ -76,13 +96,11 @@ public class Map : MonoBehaviour
         AddPoint();
         if (wait.Count > 0 && to != null)
         {
-            //Debug.Log("x:" + wait[0].x + "y:" + wait[0].y);
             StartCoroutine(DrawSearch());
             BFS(to);
         }
-        StartCoroutine(DrawWay());
-        //Debug.Log(sData[to.x, to.y].step);
-        //Debug.Log(wait.Count);
+        //StartCoroutine(DrawWay());
+        DrawWay(sData[to.x,to.y]);
     }
 
     public void ReadMapFile()
@@ -138,29 +156,72 @@ public class Map : MonoBehaviour
     {
         Transform cube;
 
-        Vector3 sPos = new Vector3(wait[0].x, 2, -wait[0].y);
+        Vector3 sPos = new Vector3(wait[0].x, 20, -wait[0].y);
         cube = Instantiate(sCube, sPos, Quaternion.identity,sEnv);
 
 
         yield return 0;
     }
 
-    IEnumerator DrawWay()
+    public void DrawWay(SearchData back)
     {
         Transform wayCube;
-        int wayStep = sData[to.x, to.y].step;
+        //path.Add(wait[0]);
+
+        int wayStep = back.step;
         int nowStep = wayStep;
+
+        wayCube = Instantiate(way, new Vector3(back.parent.pPos.x, -0.5f, -back.parent.pPos.y), Quaternion.identity);
+
+        if(nowStep == 0)
+        {
+            return;
+        }
+
+        DrawWay(back.parent);
+        //if (nowStep > 0)
+        //{
+
+        //    nowStep--;
+        //}
+
+
+
+
+
+        ////y+1
+        //if (sData[path[0].x,path[0].y+1].step == wayStep-1)
+        //{
+        //    Pos temp = new Pos(path[0].x, path[0].y + 1);
+        //    path.RemoveAt(0);
+        //    path.Add(temp);
+        //    wayCube = Instantiate(way, new Vector3(item.parent.x, -0.5f, -item.parent.y), Quaternion.identity);
+        //}
+
 
         //foreach (var item in sData)
         //{
-        //    if (item.step == nowStep)
+        //    if(item == null)
         //    {
-        //        wayCube = Instantiate(way, new Vector3(item., -0.5f, -j), Quaternion.identity);
-        //        nowStep--;
+        //        continue;
         //    }
-        //}
+        //    else
+        //    {
+        //        if (item.step == nowStep)
+        //        {
+        //            wayCube = Instantiate(way, new Vector3(item.parent.x, -0.5f, -item.parent.y), Quaternion.identity);
 
-        yield return 0;
+        //            if (nowStep == 0)
+        //            {
+        //                break;
+        //            }
+        //            nowStep--;
+        //        }
+        //    }
+        //    //yield return 0;
+
+        //}
+        ////yield return null;
     }
 
     public void AddPoint()
@@ -231,7 +292,7 @@ public class Map : MonoBehaviour
                     if (sData[nextY1.x, nextY1.y] == null)
                     {
                         wait.Add(nextY1);
-                        sData[nextY1.x, nextY1.y] = new SearchData(step + 1);
+                        sData[nextY1.x, nextY1.y] = new SearchData(step + 1,thisPos);
                     }
                 }
             }
@@ -254,7 +315,7 @@ public class Map : MonoBehaviour
                     if (sData[nextY_1.x, nextY_1.y] == null)
                     {
                         wait.Add(nextY_1);
-                        sData[nextY_1.x, nextY_1.y] = new SearchData(step + 1);
+                        sData[nextY_1.x, nextY_1.y] = new SearchData(step + 1, thisPos);
                     }
                 }
             }
@@ -277,7 +338,7 @@ public class Map : MonoBehaviour
                     if (sData[nextX_1.x, nextX_1.y] == null)
                     {
                         wait.Add(nextX_1);
-                        sData[nextX_1.x, nextX_1.y] = new SearchData(step + 1);
+                        sData[nextX_1.x, nextX_1.y] = new SearchData(step + 1, thisPos);
                     }
                 }
             }
@@ -300,7 +361,7 @@ public class Map : MonoBehaviour
                     if (sData[nextX1.x, nextX1.y] == null)
                     {
                         wait.Add(nextX1);
-                        sData[nextX1.x, nextX1.y] = new SearchData(step + 1);
+                        sData[nextX1.x, nextX1.y] = new SearchData(step + 1, thisPos);
                     }
                 }
             }
@@ -310,16 +371,12 @@ public class Map : MonoBehaviour
 
     public void BFS(Pos target)
     {
-        //DrawSearch(wait[0]);
-
         if (Search(wait[0], target) == true)
         {
-            //Debug.Log(wait[0]);
             Debug.Log("找到了！");
             wait.Clear();
             return;
         }
         wait.Remove(wait[0]);
-
     }
 }
