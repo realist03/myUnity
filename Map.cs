@@ -34,18 +34,17 @@ public class SearchData
 {
     public int step;
 
-    public SearchData parent;
 
-    public Pos pPos;
+    public Pos parent;
 
     public SearchData(int step)
     {
         this.step = step;
     }
-    public SearchData(int step,Pos pPos)
+    public SearchData(int step,Pos parent)
     {
         this.step = step;
-        this.parent.pPos = pPos;
+        this.parent = parent;
     }
     public bool Equals(SearchData other)
     {
@@ -76,31 +75,39 @@ public class Map : MonoBehaviour
     static int wide = 40;
     static int height = 30;
 
+    public bool isFind = false;
+    public bool isDraw = false;
+    public bool isLand = false;
     int[,] map;
-    int[,] searchMap = new int[wide, height];
+    //int[,] searchMap = new int[wide, height];
     
-    SearchData[,] sData = new SearchData[wide,height];
+    static SearchData[,] sData = new SearchData[wide,height];
 
     List<Pos> wait = new List<Pos>();
     List<Pos> path = new List<Pos>();
+    public List<Pos> go = new List<Pos>();
     Pos to;
     Pos thisP;
-	void Start ()
+    Pos temp;
+    void Start()
     {
         ReadMapFile();
         AddWall();
     }
 
+    int gameState = 0;
     void Update ()
     {
         AddPoint();
-        if (wait.Count > 0 && to != null)
+        if (wait.Count > 0 && to != null && !isFind)
         {
-            StartCoroutine(DrawSearch());
+            DrawSearch();
             BFS(to);
         }
-        //StartCoroutine(DrawWay());
-        DrawWay(sData[to.x,to.y]);
+        if(isFind)
+        {
+            temp = DrawWay(temp);
+        }
     }
 
     public void ReadMapFile()
@@ -152,76 +159,35 @@ public class Map : MonoBehaviour
         }
     }
 
-    IEnumerator  DrawSearch()
+    void  DrawSearch()
     {
         Transform cube;
 
         Vector3 sPos = new Vector3(wait[0].x, 20, -wait[0].y);
         cube = Instantiate(sCube, sPos, Quaternion.identity,sEnv);
 
-
-        yield return 0;
+        Destroy(cube.gameObject, 5);
+        return;
     }
 
-    public void DrawWay(SearchData back)
+    Pos DrawWay(Pos back)
     {
-        Transform wayCube;
-        //path.Add(wait[0]);
-
-        int wayStep = back.step;
-        int nowStep = wayStep;
-
-        wayCube = Instantiate(way, new Vector3(back.parent.pPos.x, -0.5f, -back.parent.pPos.y), Quaternion.identity);
-
-        if(nowStep == 0)
+        if (sData[back.x, back.y].step == 0)
         {
-            return;
+            isFind = false;
+            isDraw = true;
+            return null;
         }
 
-        DrawWay(back.parent);
-        //if (nowStep > 0)
-        //{
+        path.Add(back);
+        go.Add(back);
+        Transform wayCube;
 
-        //    nowStep--;
-        //}
+        wayCube = Instantiate(way, new Vector3(path[0].x, -0.5f, -path[0].y), Quaternion.identity);
+        Destroy(wayCube.gameObject, 3);
+        path.RemoveAt(0);
 
-
-
-
-
-        ////y+1
-        //if (sData[path[0].x,path[0].y+1].step == wayStep-1)
-        //{
-        //    Pos temp = new Pos(path[0].x, path[0].y + 1);
-        //    path.RemoveAt(0);
-        //    path.Add(temp);
-        //    wayCube = Instantiate(way, new Vector3(item.parent.x, -0.5f, -item.parent.y), Quaternion.identity);
-        //}
-
-
-        //foreach (var item in sData)
-        //{
-        //    if(item == null)
-        //    {
-        //        continue;
-        //    }
-        //    else
-        //    {
-        //        if (item.step == nowStep)
-        //        {
-        //            wayCube = Instantiate(way, new Vector3(item.parent.x, -0.5f, -item.parent.y), Quaternion.identity);
-
-        //            if (nowStep == 0)
-        //            {
-        //                break;
-        //            }
-        //            nowStep--;
-        //        }
-        //    }
-        //    //yield return 0;
-
-        //}
-        ////yield return null;
+        return sData[back.x, back.y].parent;
     }
 
     public void AddPoint()
@@ -230,7 +196,10 @@ public class Map : MonoBehaviour
         RaycastHit hit;
         ray = Camera.main.ScreenPointToRay(mousePos);
         Transform cha;
-
+        if(thisP != null)
+        {
+            thisP = new Pos((int)Way.player.position.x, (int)-Way.player.position.z);
+        }
         if(Input.GetMouseButtonDown(0))
         {
             if(Physics.Raycast(ray,out hit))
@@ -238,8 +207,13 @@ public class Map : MonoBehaviour
                 if(hit.collider.gameObject.tag == "Floor")
                 {
                     Vector3 pos = new Vector3((int)hit.point.x, hit.point.y + 0.5f, (int)hit.point.z);
-                    thisP = new Pos((int)pos.x,-(int)pos.z);
+                    if(thisP == null)
+                    {
+                        thisP = new Pos((int)pos.x, -(int)pos.z);
+                    }
                     cha = Instantiate(character, pos, Quaternion.identity);
+
+                    Way.player = cha;
 
                     InitSearch(thisP);
                 }
@@ -254,6 +228,9 @@ public class Map : MonoBehaviour
                     Vector3 pos = new Vector3((int)hit.point.x, hit.point.y + 0.5f, (int)hit.point.z);
                     to = new Pos((int)pos.x, (int)-pos.z);
                     cha = Instantiate(character, pos, Quaternion.identity);
+
+                    temp = to;
+
                 }
             }
         }
@@ -283,7 +260,7 @@ public class Map : MonoBehaviour
             {
                 if (nextY1.Equals(target))
                 {
-                    sData[nextY1.x, nextY1.y] = new SearchData(step + 1);
+                    sData[nextY1.x, nextY1.y] = new SearchData(step + 1, thisPos);
 
                     return true;
                 }
@@ -306,7 +283,7 @@ public class Map : MonoBehaviour
             {
                 if (nextY_1.Equals(target))
                 {
-                    sData[nextY_1.x, nextY_1.y] = new SearchData(step + 1);
+                    sData[nextY_1.x, nextY_1.y] = new SearchData(step + 1, thisPos);
 
                     return true;
                 }
@@ -329,7 +306,7 @@ public class Map : MonoBehaviour
             {
                 if (nextX_1.Equals(target))
                 {
-                    sData[nextX_1.x, nextX_1.y] = new SearchData(step + 1);
+                    sData[nextX_1.x, nextX_1.y] = new SearchData(step + 1, thisPos);
 
                     return true;
                 }
@@ -352,7 +329,7 @@ public class Map : MonoBehaviour
             {
                 if (nextX1.Equals(target))
                 {
-                    sData[nextX1.x, nextX1.y] = new SearchData(step + 1);
+                    sData[nextX1.x, nextX1.y] = new SearchData(step + 1, thisPos);
 
                     return true;
                 }
@@ -375,6 +352,7 @@ public class Map : MonoBehaviour
         {
             Debug.Log("找到了！");
             wait.Clear();
+            isFind = true;
             return;
         }
         wait.Remove(wait[0]);
