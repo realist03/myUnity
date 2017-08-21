@@ -5,61 +5,35 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     PlayerCharacter player;
-    Character character;
-    public LineRenderer line;
-    public ParticleSystem laserFX;
-    float timer;
-    float x;
-    float y;
-    void Start()
+	void Start ()
     {
-        character = GetComponent<Character>();
-        character.isBlue = true;
         player = GetComponent<PlayerCharacter>();
-    }
-
-    void Update()
+	}
+	
+	void FixedUpdate ()
     {
-        timer += Time.deltaTime;
-        if (Input.GetMouseButton(0))
+        var h = Input.GetAxis("Horizontal");
+        var v = Input.GetAxis("Vertical");
+
+        var x = Input.GetAxis("MouseHorizontal");
+        var y = Input.GetAxis("MouseVertical");
+
+        player.Move(h, v);
+        player.Rotate(y);
+
+        if(Input.GetMouseButton(0))
         {
             player.Shoot();
-            timer = 0;
         }
 
-        if(Input.GetMouseButton(1))
-        {
-            player.LaserShoot();
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            laserFX.gameObject.SetActive(true);
-            line.gameObject.SetActive(true);
-        }
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            laserFX.gameObject.SetActive(false);
-            line.gameObject.SetActive(false);
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
+        if(Input.GetKeyDown(KeyCode.R))
         {
             player.TransColor();
         }
 
-        if(PlayerCharacter.energy == 100 && Input.GetKeyDown(KeyCode.Q))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
-            player.EnergyShoot();
+            player.TransToInkFish();
         }
-        if(player.isEnergy)
-        {
-            player.energyTimer -= Time.deltaTime;
-        }
-        if(player.energyTimer <= 0.05f)
-        {
-            player.ExitEnergy();
-        }
-    }
+	}
 }

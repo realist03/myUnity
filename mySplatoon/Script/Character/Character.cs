@@ -1,65 +1,92 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput;
 
 public class Character : MonoBehaviour
 {
-    int floorMask;
-    float camRayLength;
-    bool isDead;
+    public enum chaColor
+    {
+        None,
+        Red,
+        Blue,
+    }
 
-    private Rigidbody rigid;
-    private float speed = 4f;
-    private float turnSpeed = 120;
-    private Vector3 moveMent;
-    private Animator anima;
-    private int health;
-    public float fireForce = 1000;
+
+    public chaColor curColor = chaColor.None;
+
+
+    public Renderer humanModel;
+    public Renderer inkFishModel;
+    public Renderer shellM;
+    public Material blue;
+    public Material red;
 
     public Rigidbody shell;
-    public Transform gun;
-    public ParticleSystem fireFX;
+    public Transform muzzle;
+    public float moveSpeed;
+    public float turnSpeed;
+    public int health;
+    public int fireForce;
+    public int ink = 100;
+    public int playerShellDamage;
 
-    public AudioSource step;
-    public AudioSource shootAudio;
+    public bool isInkFish = false;
 
-    public bool isBlue;
-
+    float shootBlank = 0.2f;
     float shootTimer;
-    public float shootSpace = 0.2f;
-    private void Awake()
-    {
-        floorMask = LayerMask.GetMask("Floor");
-        rigid = GetComponent<Rigidbody>();
-        anima = GetComponent<Animator>();
-    }
+    bool canShoot;
 
-    protected virtual void Update()
+    Animator animator;
+	void Start ()
     {
+        animator = GetComponent<Animator>();
+    }
+	
+	protected virtual void Update ()
+    {
+        if (GameMode.isGameOver == true)
+            return;
         shootTimer += Time.deltaTime;
-
-        if (!Input.anyKey && step.isPlaying) 
+        if (shootTimer >= shootBlank)
         {
-            step.Stop();                    
+            canShoot = true;
         }
-    }
 
+        if (health <= 0)
+        {
+            Die();
+        }
+        CheckMapColor();
+	}
 
     public void Move(float h, float v)
     {
-        transform.position += transform.forward * v * speed * Time.deltaTime;
-        transform.position += transform.right * h * speed * Time.deltaTime;
-        if(!step.isPlaying)
-        {
-            step.Play();
-        }
+        transform.position += transform.forward * v * moveSpeed * Time.deltaTime;
+        transform.position += transform.right * h * moveSpeed * Time.deltaTime;
     }
 
-    public void Rotate(float x,float y)
+    public void Rotate(float v)
     {
-        var xAngles = x * turnSpeed * Time.deltaTime;
-        transform.Rotate(0, xAngles, 0);
+        var Angles = -v * turnSpeed * Time.deltaTime;
+        transform.Rotate(0, Angles, 0);
+    }
+
+    public void Shoot()
+    {
+        if (canShoot == false || ink <= 0)
+        {
+            return;
+        }
+        canShoot = false;
+        shootTimer = 0;
+
+        ink -= 10;
+        Rigidbody shell_;
+        shell_ = Instantiate(shell, muzzle.position, muzzle.rotation) as Rigidbody;
+        shell_.gameObject.SetActive(true);
+        shell_.AddForce(transform.forward * fireForce);
+        Destroy(shell_.gameObject, 3);
+
     }
 
     public void TakeDamage(int damage)
@@ -67,38 +94,67 @@ public class Character : MonoBehaviour
         health -= damage;
     }
 
-    public void Death()
+    protected virtual void Die()
     {
-        isDead = true;
-        anima.SetTrigger("Die");
 
     }
 
-    public void Animating(float h, float v)
-    {
-        bool walking = h != 0f || v != 0f;
-        anima.SetBool("IsWalking", walking);
-    }
 
-    public void Shoot()
+    public void TransToInkFish()
     {
-        if (shootTimer >= shootSpace)
+        if(isInkFish == false)
         {
-            Rigidbody ball;
-            ParticleSystem shoot;
-            ball = Instantiate(shell, gun.position, gun.rotation);
-            shoot = Instantiate(fireFX, gun.position, gun.rotation);
-            ball.gameObject.SetActive(true);
-            shoot.gameObject.SetActive(true);
-            fireFX.gameObject.SetActive(true);
-            ball.AddForce(transform.forward * fireForce);
-            shootAudio.Play();
-            Destroy(ball.gameObject, 2);
-            Destroy(shoot.gameObject, 2);
-            shootTimer = 0;
+            isInkFish = true;
+            //animator.Set
+            humanModel.gameObject.SetActive(false);
+            inkFishModel.gameObject.SetActive(true);
         }
         else
-            return;
+        {
+            isInkFish = false;
+            //animator.Set
+            humanModel.gameObject.SetActive(true);
+            inkFishModel.gameObject.SetActive(false);
+        }
     }
 
-}
+    public void CheckPositon()
+    {
+        //if (transform.position && isInkFish = true;)
+        //{
+        //    RegenerateInk();
+        //}
+    }
+
+    public void RegenerateInk()
+    {
+        ink += 20;
+    }
+
+    public bool CheckMapColor()
+    {
+        var posX = Mathf.Floor(transform.position.x);
+        var posY = Mathf.Floor(transform.position.z);
+        //Debug.Log(posX + "," + posY);
+        chaColor checkColor = chaColor.None;
+
+        if(Mapping.painted.ContainsKey(new Vector2(posX,posY)))
+        {
+            Debug.Log("have");
+            if (Mapping.painted.TryGetValue(new Vector2(posX, posY), out checkColor))
+            {
+                if (checkColor != chaColor.None && checkColor != curColor)
+                {
+                    Debug.Log("dif");
+                    return false;
+                }
+                if(checkColor != chaColor.None && checkColor == curColor)
+                {
+                    Debug.Log("same");
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+} 

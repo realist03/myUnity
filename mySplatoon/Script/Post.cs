@@ -9,6 +9,12 @@ namespace Es.InkPainter.Sample
         public Color red;
         public Color blue;
         public Character character;
+        public Rigidbody shell;
+
+        public Character.chaColor shellCurColor = Character.chaColor.None;
+
+        public List<RaycastHit> hit = new List<RaycastHit>();
+
 
         [System.Serializable]
         private enum UseMethodType
@@ -25,22 +31,50 @@ namespace Es.InkPainter.Sample
         [SerializeField]
         private UseMethodType useMethodType = UseMethodType.RaycastHitInfo;
 
-        private void Update()
+        private void Start()
         {
             InitColor();
+
+            shell = GetComponent<Rigidbody>();
+        }
+        private void Update()
+        {
+
         }
 
         private void OnCollisionEnter(Collision collision)
         {
-            var hit = Physics.SphereCastAll(transform.position,0.3f,transform.forward,03f,1<<8);
+            var hit = Physics.RaycastAll(transform.position, transform.forward, 1.2f, 1 << 8);
+
+            Vector3[] intHit = new Vector3[hit.Length];
+
+            for (int i = 0; i < intHit.Length; i++)
+            {
+                intHit[i].x = Mathf.Floor(hit[i].point.x);
+                intHit[i].y = Mathf.Floor(hit[i].point.y);
+                intHit[i].z = Mathf.Floor(hit[i].point.z);
+            }
             bool success = true;
 
             foreach (var item in hit)
             {
-                Debug.Log("子弹在物体："+ item.collider.gameObject.name+"发生碰撞");
-                Destroy(gameObject);
+                //Debug.Log("子弹在物体：" + item.collider.gameObject.name + "发生碰撞");
                 var paintObject = item.transform.GetComponent<InkCanvas>();
                 if (paintObject != null)
+                {
+                    var posX = Mathf.FloorToInt(gameObject.transform.position.x);
+                    var posY = Mathf.FloorToInt(gameObject.transform.position.z);
+
+                    if(Mapping.painted.ContainsKey(new Vector2(posX, posY)))
+                    {
+                        Mapping.painted[new Vector2(posX, posY)] = shellCurColor;
+                    }
+                    else
+                    {
+                        Mapping.painted.Add(new Vector2(posX, posY), character.curColor);
+                        Debug.Log("dic:" + posX + "," + posY);
+                    }
+
                     switch (useMethodType)
                     {
                         case UseMethodType.RaycastHitInfo:
@@ -61,6 +95,8 @@ namespace Es.InkPainter.Sample
                             success = paintObject.PaintUVDirect(brush, item.textureCoord);
                             break;
                     }
+                    Destroy(gameObject);
+                }
                 if (!success)
                     Debug.LogError("Failed to paint.");
             }
@@ -68,12 +104,14 @@ namespace Es.InkPainter.Sample
 
         void InitColor()
         {
-            if (character.isBlue)
+            if (character.curColor == Character.chaColor.Blue)
             {
+                shellCurColor = Character.chaColor.Blue;
                 brush.Color = blue;
             }
             else
             {
+                shellCurColor = Character.chaColor.Red;
                 brush.Color = red;
             }
         }
