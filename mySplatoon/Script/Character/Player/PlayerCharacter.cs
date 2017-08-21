@@ -6,11 +6,6 @@ public class PlayerCharacter : Character
 {
     public Renderer playerModel;
 
-    void Start ()
-    {
-		
-	}
-
     protected override void Update()
     {
         base.Update();

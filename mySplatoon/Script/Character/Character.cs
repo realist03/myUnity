@@ -133,8 +133,8 @@ public class Character : MonoBehaviour
 
     public bool CheckMapColor()
     {
-        var posX = Mathf.Floor(transform.position.x);
-        var posY = Mathf.Floor(transform.position.z);
+        var posX = Mathf.FloorToInt(transform.position.x);
+        var posY = Mathf.FloorToInt(transform.position.z);
         //Debug.Log(posX + "," + posY);
         chaColor checkColor = chaColor.None;
 
