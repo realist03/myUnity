@@ -6,22 +6,10 @@ public class PlayerCharacter : Character
 {
     public Renderer playerModel;
     public Renderer InkFish;
-    public GameObject InkLow;
-
-    bool isRegenerating;
 
     protected override void Update()
     {
         base.Update();
-
-        if (ink <= 10)
-        {
-            InkLow.SetActive(true);
-        }
-        else
-        {
-            InkLow.SetActive(false);
-        }
     }
 
     public void TransColor()

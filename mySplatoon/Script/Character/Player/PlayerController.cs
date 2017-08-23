@@ -34,10 +34,20 @@ public class PlayerController : MonoBehaviour
         if(Input.GetKey(KeyCode.Q))
         {
             player.TransToInkFish();
+            if (player.isInkFish && player.isSame)
+            {
+                player.isReInk = true;
+            }
+            else
+            {
+                player.isReInk = false;
+            }
+
         }
-        if(Input.GetKeyUp(KeyCode.Q))
+        if (Input.GetKeyUp(KeyCode.Q))
         {
             player.TranToHuman();
+            player.isReInk = false;
         }
 	}
 }

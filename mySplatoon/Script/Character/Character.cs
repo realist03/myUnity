@@ -36,6 +36,7 @@ public class Character : MonoBehaviour
     public bool isInkFish = false;
     public bool isDifferent = false;
     public bool isSame = false;
+    public bool isReInk = false;
 
     float shootBlank = 0.2f;
     float damageBlank = 1;
@@ -44,8 +45,6 @@ public class Character : MonoBehaviour
     float damageTImer;
 
     bool canShoot;
-
-    public GameObject ReInk;
 
     Animator animator;
 	void Start ()
@@ -83,13 +82,13 @@ public class Character : MonoBehaviour
         ParticleSystem shootVFX;
         if(curColor == chaColor.Red)
         {
-            shootVFX = Instantiate(redVFX, muzzle.position, redVFX.gameObject.transform.rotation, muzzle) as ParticleSystem;
+            shootVFX = Instantiate(redVFX, muzzle.position, redVFX.gameObject.transform.rotation, transform) as ParticleSystem;
             shootVFX.gameObject.SetActive(true);
             Destroy(shootVFX, 1);
         }
         else if(curColor == chaColor.Blue)
         {
-            shootVFX = Instantiate(blueVFX, muzzle.position, blueVFX.gameObject.transform.rotation, muzzle) as ParticleSystem;
+            shootVFX = Instantiate(blueVFX, muzzle.position, blueVFX.gameObject.transform.rotation, transform) as ParticleSystem;
             shootVFX.gameObject.SetActive(true);
             Destroy(shootVFX, 1);
         }
@@ -103,10 +102,10 @@ public class Character : MonoBehaviour
     protected virtual void Die()
     {
         ParticleSystem die;
-        die = Instantiate(dieVFX, transform.localPosition, transform.localRotation, null);
+        die = Instantiate(dieVFX, transform.localPosition, transform.localRotation, transform);
         die.gameObject.SetActive(true);
-        Destroy(die, 2);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+        Destroy(gameObject,2);
     }
 
 
@@ -294,12 +293,6 @@ public class Character : MonoBehaviour
                 inkFishModel.sharedMaterial = red;
             }
         }
-    }
-
-    public void RegenerateInk()
-    {
-        ink += 1;
-        ReInk.SetActive(true);
     }
 
 }

@@ -18,14 +18,19 @@ public class DecalsPost : Printer
     private float maxparticleCollisionSize;
     private List<ParticleCollisionEvent> collisionEvents;
 
-    public Character.chaColor shellCurColor = Character.chaColor.None;
     public Character character;
+
+    Character.chaColor shellCurColor = Character.chaColor.None;
 
 
     void Start()
     {
         //Grab Particle System
         partSystem = GetComponent<ParticleSystem>();
+
+        character = GetComponentInParent<Character>();
+
+        shellCurColor = character.curColor;
 
         if (Application.isPlaying)
         {
