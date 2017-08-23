@@ -31,9 +31,13 @@ public class PlayerController : MonoBehaviour
             player.TransColor();
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKey(KeyCode.Q))
         {
             player.TransToInkFish();
+        }
+        if(Input.GetKeyUp(KeyCode.Q))
+        {
+            player.TranToHuman();
         }
 	}
 }
