@@ -6,6 +6,7 @@ public class PlayerCharacter : Character
 {
     public Renderer playerModel;
     public Renderer InkFish;
+<<<<<<< HEAD
 
     BoxCollider boxCollider;
     Rigidbody rigid;
@@ -17,6 +18,8 @@ public class PlayerCharacter : Character
     {
         get { return Physics.Raycast(transform.position, -Vector3.up, boxCollider.bounds.extents.y * 1.2f); }
     }
+=======
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
 
 
     private void Awake()
@@ -30,6 +33,7 @@ public class PlayerCharacter : Character
 
     }
 
+<<<<<<< HEAD
     private void FixedUpdate()
     {
         Vector3 velocity = rigid.velocity;
@@ -43,6 +47,8 @@ public class PlayerCharacter : Character
 
     }
 
+=======
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
     public void TransColor()
     {
         if (curColor == chaColor.Blue)

@@ -18,25 +18,42 @@ public class DecalsPost : Printer
     private float maxparticleCollisionSize;
     private List<ParticleCollisionEvent> collisionEvents;
 
+<<<<<<< HEAD
     public Actor actor;
 
     Actor.eColor shellCurColor = Actor.eColor.None;
+=======
+    public Character character;
+
+    Character.chaColor shellCurColor = Character.chaColor.None;
+
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
 
     void Start()
     {
         //Grab Particle System
         partSystem = GetComponent<ParticleSystem>();
 
+<<<<<<< HEAD
         actor = GetComponentInParent<Actor>();
 
         shellCurColor = actor.curColor;
+=======
+        character = GetComponentInParent<Character>();
+
+        shellCurColor = character.curColor;
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
 
         if (Application.isPlaying)
         {
             //Initialize collision list
             collisionEvents = new List<ParticleCollisionEvent>();
         }
+<<<<<<< HEAD
         //InitColor();
+=======
+        InitColor();
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
     }
     void Update()
     {
@@ -76,6 +93,7 @@ public class DecalsPost : Printer
                     normal = hit.normal;
                     surface = hit.collider.transform;
 
+<<<<<<< HEAD
 
                     Debug.Log("被打中"+ hit.collider.name);
                     if (hit.collider.tag == "Enemy" || (hit.collider.tag == "Player"))
@@ -87,6 +105,13 @@ public class DecalsPost : Printer
                             //get.TakeDamage(20);
                             Debug.Log("被打中");
                         }
+=======
+                    if(hit.collider.tag == "Enemy" || (hit.collider.tag == "Player"))
+                    {
+                        var get = hit.collider.gameObject.GetComponentInParent<Character>();
+                        get.TakeDamage(20);
+                        Debug.Log("hit");
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
                     }
 
                     //Calculate our rotation
@@ -102,22 +127,36 @@ public class DecalsPost : Printer
 
                     Vector3 intPos = new Vector3(posX+0.5f, position.y, posZ+0.56f);
 
+<<<<<<< HEAD
                     if (Mapping.map.ContainsKey(new Vector2(posX, posZ)))
                     {
                         if (Mapping.map[new Vector2(posX, posZ)] == shellCurColor)
+=======
+                    if (Mapping.painted.ContainsKey(new Vector2(posX, posZ)))
+                    {
+                        if (Mapping.painted[new Vector2(posX, posZ)] == shellCurColor)
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
                         {
                             i++;
                             continue;
                         }
                         else
                         {
+<<<<<<< HEAD
                             Mapping.map[new Vector2(posX, posZ)] = shellCurColor;
+=======
+                            Mapping.painted[new Vector2(posX, posZ)] = shellCurColor;
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
                     }
                     else
                     {
+<<<<<<< HEAD
                         Mapping.map.Add(new Vector2(posX, posZ), actor.curColor);
+=======
+                        Mapping.painted.Add(new Vector2(posX, posZ), character.curColor);
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
                         Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         //Debug.Log("dic:" + posX + "," + posZ);
                     }
@@ -126,4 +165,20 @@ public class DecalsPost : Printer
             }
         }
     }
+<<<<<<< HEAD
+=======
+
+    void InitColor()
+    {
+        if (character.curColor == Character.chaColor.Blue)
+        {
+            shellCurColor = Character.chaColor.Blue;
+        }
+        else
+        {
+            shellCurColor = Character.chaColor.Red;
+        }
+    }
+
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
 }

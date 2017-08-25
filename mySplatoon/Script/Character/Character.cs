@@ -201,12 +201,20 @@ public class Character : MonoBehaviour
 
         if (ink < 100)
         {
+<<<<<<< HEAD
             ink += 0.03f;
+=======
+            ink += 0.05f;
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
         }
 
         if(health < 100)
         {
+<<<<<<< HEAD
             health += 0.03f;
+=======
+            health += 0.05f;
+>>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
         }
 
         if (GameMode.isGameOver == true)
