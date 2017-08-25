@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class EnemyCharacter : Character
 {
-    public Renderer enemy;
-
     void Start ()
     {
         InitMaterial();
@@ -13,21 +11,6 @@ public class EnemyCharacter : Character
     protected override void Update()
     {
         base.Update();
-    }
-
-
-    public void InitMaterial()
-    {
-        if (curColor == chaColor.Blue)
-        {
-            enemy.sharedMaterial = blue;
-            shellM.sharedMaterial = blue;
-        }
-        else
-        {
-            enemy.sharedMaterial = red;
-            shellM.sharedMaterial = red;
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
