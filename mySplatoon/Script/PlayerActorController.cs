@@ -7,6 +7,11 @@ public class PlayerActorController : NetworkBehaviour
 {
     PlayerActor player;
 
+    float h;
+    float v;
+    float x;
+    float y;
+
 	void Start ()
     {
         player = GetComponent<PlayerActor>();
@@ -17,34 +22,45 @@ public class PlayerActorController : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
-        var h = Input.GetAxis("Horizontal");
-        var v = Input.GetAxis("Vertical");
+        h = Input.GetAxis("Horizontal");
+        v = Input.GetAxis("Vertical");
 
-        var x = Input.GetAxis("MouseHorizontal");
-        var y = Input.GetAxis("MouseVertical");
+        x = Input.GetAxis("MouseHorizontal");
+        y = Input.GetAxis("MouseVertical");
 
         player.Move(v, h);
         player.Rotate(y);
 
-        player.CmdMove(v, h);
-
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             player.Jump();
         }
 
-        if(Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         {
             player.Shoot();
         }
 
-        if(Input.GetKey(KeyCode.E))
+        if (Input.GetKey(KeyCode.E))
         {
             player.TransToInkFish();
         }
-        if(Input.GetKeyUp(KeyCode.E))
+        if (Input.GetKeyUp(KeyCode.E))
         {
             player.TransToHuman();
         }
+
+
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isLocalPlayer)
+            return;
+        if (Input.GetKeyDown(KeyCode.Space))
+            player.CmdJump();
+
+        if (Input.GetMouseButton(0))
+            player.CmdShoot();
     }
 }

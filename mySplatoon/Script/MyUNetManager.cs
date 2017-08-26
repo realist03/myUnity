@@ -31,6 +31,7 @@ public class MyUNetManager : NetworkManager
     {
         DontDestroyOnLoad(gameObject);
         uiRoot = Instantiate(Resources.Load<GameObject>("Init/UIRoot"));
+        Init();
 
         DontDestroyOnLoad(uiRoot);
 	}
@@ -40,17 +41,17 @@ public class MyUNetManager : NetworkManager
         UI = GameObject.Find("Menu");
         HostButton = GameObject.Find("CreatButton").GetComponent<Button>();
         JoinGameButton = GameObject.Find("JoinButton").GetComponent<Button>();
-        DisNetButton = GameObject.Find("Btn_DisNet").GetComponent<Button>();
+        //DisNetButton = GameObject.Find("Btn_DisNet").GetComponent<Button>();
 
-        OpenMenuButton = GameObject.Find("MenuButton").GetComponent<Button>();
+        //OpenMenuButton = GameObject.Find("MenuButton").GetComponent<Button>();
 
-        inputIp = GameObject.Find("InputIpAdressField").GetComponent<InputField>();
-        inputIp.text = "192.168.199.194";
+        inputIp = GameObject.Find("InputIP").GetComponent<InputField>();
+        inputIp.text = Network.player.ipAddress;
 
         HostButton.onClick.AddListener(CreatRoom);
         JoinGameButton.onClick.AddListener(JoinGame);
-        DisNetButton.onClick.AddListener(ExitGame);
-        OpenMenuButton.onClick.AddListener(SetUIActive);
+        //DisNetButton.onClick.AddListener(ExitGame);
+        //OpenMenuButton.onClick.AddListener(SetUIActive);
 
     }
 

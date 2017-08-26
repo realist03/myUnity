@@ -256,12 +256,30 @@ public class Actor : NetworkBehaviour
     [Command]
     public void CmdMove(float v, float h)
     {
+        RpcMove(v, h);
+    }
+    [ClientRpc]
+    public void RpcMove(float v, float h)
+    {
         data.transform.position += data.transform.forward * v * data.moveSpeed * Time.deltaTime;
 
         data.transform.position += data.transform.right * h * data.moveSpeed * Time.deltaTime;
     }
 
+   
+
     public void Rotate(float v)
+    {
+        var Angles = -v * data.turnSpeed * Time.deltaTime;
+        data.transform.Rotate(0, Angles, 0);
+    }
+    [Command]
+    public void CmdRotate(float v)
+    {
+        RpcRotate(v);
+    }
+    [ClientRpc]
+    public void RpcRotate(float v)
     {
         var Angles = -v * data.turnSpeed * Time.deltaTime;
         data.transform.Rotate(0, Angles, 0);
@@ -279,10 +297,49 @@ public class Actor : NetworkBehaviour
 
         rigid.velocity = velocity;
     }
+    [Command]
+    public void CmdJump()
+    {
+        RpcJump();
+    }
+    [ClientRpc]
+    public void RpcJump()
+    {
+        if (curState == eState.Jump)
+        {
+            return;
+        }
+        Vector3 velocity = rigid.velocity;
+
+        velocity.y = data.jumpHeight;
+
+        rigid.velocity = velocity;
+    }
 
     public void Shoot()
     {
         if(curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank)
+        {
+            return;
+        }
+
+        data.shootTimer = 0;
+
+        ParticleSystem shoot;
+
+        shoot = Instantiate(model.MainVFX, model.muzzle.position, model.MainVFX.gameObject.transform.rotation, transform) as ParticleSystem;
+        shoot.gameObject.SetActive(true);
+        Destroy(shoot, 1);
+    }
+    [Command]
+    public void CmdShoot()
+    {
+        RpcShoot();
+    }
+    [ClientRpc]
+    public void RpcShoot()
+    {
+        if (curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank)
         {
             return;
         }

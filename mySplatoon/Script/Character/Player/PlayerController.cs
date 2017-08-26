@@ -52,14 +52,6 @@ public class PlayerController : MonoBehaviour
                 player.isReInk = false;
             }
 
-<<<<<<< HEAD
-=======
-        }
-        if (Input.GetKeyUp(KeyCode.Q))
-        {
-            player.TranToHuman();
-            player.isReInk = false;
->>>>>>> 4966e6608649f9cd36703951aa5c474a412625c7
         }
         if (Input.GetKeyUp(KeyCode.Q))
         {
