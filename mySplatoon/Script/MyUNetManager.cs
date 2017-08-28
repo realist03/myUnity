@@ -38,7 +38,7 @@ public class MyUNetManager : NetworkManager
 	
     void Init()
     {
-        UI = GameObject.Find("Menu");
+        UI = GameObject.Find("GameMenu");
         HostButton = GameObject.Find("CreatButton").GetComponent<Button>();
         JoinGameButton = GameObject.Find("JoinButton").GetComponent<Button>();
         //DisNetButton = GameObject.Find("Btn_DisNet").GetComponent<Button>();
@@ -52,16 +52,14 @@ public class MyUNetManager : NetworkManager
         JoinGameButton.onClick.AddListener(JoinGame);
         //DisNetButton.onClick.AddListener(ExitGame);
         //OpenMenuButton.onClick.AddListener(SetUIActive);
-
     }
 
 
     private void CreatRoom()
     {
-        SetPort();
+        //SetPort();
         StartHost();
         UI.SetActive(false);
-
     }
 
     private void JoinGame()

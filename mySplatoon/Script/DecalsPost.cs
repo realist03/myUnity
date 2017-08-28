@@ -24,6 +24,7 @@ public class DecalsPost : Printer
 
     void Start()
     {
+
         //Grab Particle System
         partSystem = GetComponent<ParticleSystem>();
 
@@ -110,16 +111,15 @@ public class DecalsPost : Printer
                             continue;
                         }
                         else
-                        {
-                            Mapping.map[new Vector2(posX, posZ)] = shellCurColor;
+                        { 
+                            actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
                     }
                     else
                     {
-                        Mapping.map.Add(new Vector2(posX, posZ), actor.curColor);
+                        actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)actor.curColor);
                         Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
-                        //Debug.Log("dic:" + posX + "," + posZ);
                     }
                 }
                 i++;

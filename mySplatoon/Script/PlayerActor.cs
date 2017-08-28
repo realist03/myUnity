@@ -1,12 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class PlayerActor : Actor
 {
+    PlayerCamera newCamera;
+
     protected override void Init()
     {
         base.Init();
+        newCamera = FindObjectOfType<PlayerCamera>();
+        if(isLocalPlayer)
+        {
+            newCamera.character = transform;
+        }
 	}
 	
 	protected override void Update ()
@@ -33,4 +41,6 @@ public class PlayerActor : Actor
             model.InkFishModel.SetActive(false);
         }
     }
+
+
 }

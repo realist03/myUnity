@@ -28,9 +28,6 @@ public class PlayerActorController : NetworkBehaviour
         x = Input.GetAxis("MouseHorizontal");
         y = Input.GetAxis("MouseVertical");
 
-        player.Move(v, h);
-        player.Rotate(y);
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             player.Jump();
@@ -62,5 +59,10 @@ public class PlayerActorController : NetworkBehaviour
 
         if (Input.GetMouseButton(0))
             player.CmdShoot();
+
+        player.Move(v, h);
+        player.Rotate(y);
+
+        player.CmdRotate(y);
     }
 }

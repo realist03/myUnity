@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+using System;
+
 public class Pos
 {
     int x;
@@ -22,9 +25,9 @@ public class Pos
             return false;
     }
 }
-public class Mapping : MonoBehaviour
+public class Mapping : NetworkBehaviour
 {
     public static Dictionary<Vector2,Character.chaColor> painted = new Dictionary<Vector2, Character.chaColor>();
-    public static Dictionary<Vector2, Actor.eColor> map = new Dictionary<Vector2, Actor.eColor>();
 
+    public static Dictionary<Vector2, Actor.eColor> map = new Dictionary<Vector2, Actor.eColor>();
 }

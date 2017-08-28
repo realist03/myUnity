@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
  
-public class ActorData : MonoBehaviour
+public class ActorData : NetworkBehaviour
 {
     public int TeamID;
     public int ID;
@@ -17,7 +18,6 @@ public class ActorData : MonoBehaviour
     //public ParticleSystem dieVFX;
 
     //public Transform muzzle;
-
     public float moveSpeed;
     public float turnSpeed;
     public float jumpHeight;
@@ -31,26 +31,22 @@ public class ActorData : MonoBehaviour
     public float shootTimer;
     public float shootBlank;
 
-    //public float health;
+    [SyncVar]
+    public float health;
 
-    //public float ink = 100;
-    //public int playerShellDamage;
+    [SyncVar]
+    public float ink = 100;
 
-    //public bool isInkFish = false;
-    //public bool isDifferent = false;
-    //public bool isSame = false;
-    //public bool isReInk = false;
+    [SyncVar]
+    public int playerShellDamage;
 
-    //float shootBlank = 0.2f;
-    //float damageBlank = 1;
+    public bool isInkFish = false;
+    public bool isDifferent = false;
+    public bool isSame = false;
+    public bool isReInk = false;
 
-    //float shootTimer;
-    //float damageTImer;
+    float damageBlank = 1;
 
-    //bool canShoot;
-
-    //HttpUser httpUser;
-    //Animator animator;
-
+    float damageTImer;
 }
 	

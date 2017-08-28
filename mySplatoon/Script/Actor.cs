@@ -14,10 +14,10 @@ public class Actor : NetworkBehaviour
 
     public enum eColor
     {
-        None,
+        None=0,
 
-        One_Purple,
-        One_WarmYellow,
+        One_Purple=1,
+        One_WarmYellow=2,
 
         Two_LightBlue,
         Two_ColdYellow,
@@ -49,6 +49,7 @@ public class Actor : NetworkBehaviour
         Same,
         Diffent,
     }
+
     public eInkFish curFish = eInkFish.Human;
     public eColor curColor = eColor.None;
     public eState curState = eState.None;
@@ -73,6 +74,19 @@ public class Actor : NetworkBehaviour
         CheckCurJumpState();
         SetCurColor();
         data.shootTimer += Time.deltaTime;
+    }
+
+    [Command]
+    public void CmdCheckState()
+    {
+        RpcCheckState();
+    }
+    [ClientRpc]
+    public void RpcCheckState()
+    {
+        CheckMapColor();
+        CheckCurJumpState();
+        SetCurColor();
     }
 
     public void InitCurColor()
@@ -207,15 +221,18 @@ public class Actor : NetworkBehaviour
 
         if (Mapping.map.ContainsKey(new Vector2(posX, posY)))
         {
+            Debug.Log(Mapping.map.Count);
             if (Mapping.map.TryGetValue(new Vector2(posX, posY), out mapColor))
             {
                 if (mapColor != eColor.None && mapColor != curColor)
                 {
                     curSame = eSame.Diffent;
+                    Debug.Log("dif");
                 }
                 if (mapColor != eColor.None && mapColor == curColor)
                 {
                     curSame = eSame.Same;
+                    Debug.Log("same");
                 }
             }
         }
@@ -352,4 +369,41 @@ public class Actor : NetworkBehaviour
         shoot.gameObject.SetActive(true);
         Destroy(shoot, 1);
     }
+
+    public void TakeDamege(PlayerActor atker,PlayerActor target)
+    {
+        target.data.health -= atker.data.playerShellDamage;
+    }
+
+    [Command]
+    public void CmdSetMapInfo(Vector2 rPos,int rColor)
+    {
+        RpcGetMapInfo(rPos, rColor);
+    }
+
+
+    [ClientRpc]
+    public void RpcGetMapInfo(Vector2 rPos, int rColor)
+    {
+        if (!Mapping.map.ContainsKey(rPos))
+        {
+            Mapping.map.Add(rPos, (eColor)rColor);
+        }
+        else
+        {
+
+            Mapping.map[rPos] = (eColor)rColor;
+        }
+    }
+
+    //[Command]
+    //public void CmdTakeDamage(PlayerActor atker, PlayerActor target)
+    //{
+    //    RpcTakeDamage(atker,target);
+    //}
+    //[ClientRpc]
+    //public void RpcTakeDamage(PlayerActor atker, PlayerActor target)
+    //{
+    //    target.data.health -= atker.data.playerShellDamage;
+    //}
 }
