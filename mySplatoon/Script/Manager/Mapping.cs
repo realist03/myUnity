@@ -27,7 +27,5 @@ public class Pos
 }
 public class Mapping : NetworkBehaviour
 {
-    public static Dictionary<Vector2,Character.chaColor> painted = new Dictionary<Vector2, Character.chaColor>();
-
     public static Dictionary<Vector2, Actor.eColor> map = new Dictionary<Vector2, Actor.eColor>();
 }
