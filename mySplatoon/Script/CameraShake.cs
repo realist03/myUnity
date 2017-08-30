@@ -37,7 +37,7 @@ public class CameraShake : MonoBehaviour
 
             shake -= Time.deltaTime * decreaseFactor;
         }
-        if(shake < 0.01)
+        if (shake < 0.01)
         {
             shake = 0;
         }

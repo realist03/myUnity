@@ -13,7 +13,8 @@ public class Actor : NetworkBehaviour
 
     Rigidbody rigid;
 
-    LobbyPlayer lobby;
+    CameraShake shake;
+
     public enum eColor
     {
         None=0,
@@ -57,49 +58,73 @@ public class Actor : NetworkBehaviour
     public eState curState = eState.None;
     public eSame curSame = eSame.None;
 
-    private void Start()
-    {
-        Init();
-    }
 
-    protected virtual void Init ()
+    public void Awake()
     {
-
         model = GetComponent<ActorModel>();
         rigid = GetComponent<Rigidbody>();
         data = GetComponent<ActorData>();
-        lobby = TestManager.player;
-        InitCurColor();
+        shake = FindObjectOfType<CameraShake>();
     }
 
-    protected virtual void Update ()
+
+
+    public void Start()
+    {
+        gameObject.name = "Player" + netId.Value;
+        Init();
+    }
+
+
+
+
+    protected virtual void Init()
+    {
+        if (isLocalPlayer)
+        {
+            data.TeamID = BattleManager.Instance.curPlayerTeam;
+        }
+    }
+
+
+
+
+    protected virtual void Update()
     {
         CheckMapColor();
         CheckCurJumpState();
-        SetCurColor();
         data.shootTimer += Time.deltaTime;
-        Debug.Log(curColor);
-        Debug.Log(lobby.teamID);
+
+
+        if (isLocalPlayer)
+        {
+            CmdTeamId(netId.Value, data.TeamID);
+        }
     }
+
+
+
 
     [Command]
-    public void CmdCheckState()
+    public void CmdTeamId(uint rNetId, int value)
     {
-        RpcCheckState();
+        RpcGetTeamId(rNetId, value);
     }
+
     [ClientRpc]
-    public void RpcCheckState()
+    public void RpcGetTeamId(uint rNetId, int value)
     {
-        CheckMapColor();
-        CheckCurJumpState();
-        SetCurColor();
+        if (netId.Value == rNetId)
+        {
+            data.TeamID = value;
+            InitCurColor();
+        }
     }
+
 
     public void InitCurColor()
     {
-        data.TeamID = lobby.teamID;
-
-        if (lobby.colorPair == 1)
+        if (BattleManager.Instance.curColorPair == 1)
         {
             if(data.TeamID == 0)
             {
@@ -110,7 +135,7 @@ public class Actor : NetworkBehaviour
                 curColor = eColor.One_WarmYellow;
             }
         }
-        else if(lobby.colorPair == 2)
+        else if(BattleManager.Instance.curColorPair == 2)
         {
             if (data.TeamID == 0)
             {
@@ -121,7 +146,7 @@ public class Actor : NetworkBehaviour
                 curColor = eColor.Two_ColdYellow;
             }
         }
-        else if (lobby.colorPair == 3)
+        else if (BattleManager.Instance.curColorPair == 3)
         {
             if (data.TeamID == 0)
             {
@@ -132,7 +157,7 @@ public class Actor : NetworkBehaviour
                 curColor = eColor.Three_Orange;
             }
         }
-        else if (lobby.colorPair == 4)
+        else if (BattleManager.Instance.curColorPair == 4)
         {
             if (data.TeamID == 0)
             {
@@ -143,82 +168,86 @@ public class Actor : NetworkBehaviour
                 curColor = eColor.Four_Red_Purple;
             }
         }
+
+        Debug.Log(gameObject.name+"的颜色为"+curColor);
+
+        //SetCurColor();
     }
 
-    public void SetCurColor()
-    {
-        switch (curColor)
-        {
-            case eColor.None:
-                break;
-            case eColor.One_Purple:
-                var op = model.MainVFX.main;
-                op.startColor = model.One_Purple;
+    //public void SetCurColor()
+    //{
+    //    switch (curColor)
+    //    {
+    //        case eColor.None:
+    //            break;
+    //        case eColor.One_Purple:
+    //            var op = model.MainVFX.main;
+    //            op.startColor = model.One_Purple;
 
-                var post1 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex1 = post1.prints[0].gameObject.GetComponent<Decal>();
-                tex1.AlbedoColor = model.One_Purple;
-                break;
-            case eColor.One_WarmYellow:
-                var ow = model.MainVFX.main;
-                ow.startColor = model.One_WarmYellow;
+    //            var post1 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex1 = post1.prints[0].gameObject.GetComponent<Decal>();
+    //            tex1.AlbedoColor = model.One_Purple;
+    //            break;
+    //        case eColor.One_WarmYellow:
+    //            var ow = model.MainVFX.main;
+    //            ow.startColor = model.One_WarmYellow;
 
-                var post2 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex2 = post2.prints[0].gameObject.GetComponent<Decal>();
-                tex2.AlbedoColor = model.One_WarmYellow;
-                break;
-            case eColor.Two_LightBlue:
-                var tl = model.MainVFX.main;
-                tl.startColor = model.Two_LightBlue;
+    //            var post2 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex2 = post2.prints[0].gameObject.GetComponent<Decal>();
+    //            tex2.AlbedoColor = model.One_WarmYellow;
+    //            break;
+    //        case eColor.Two_LightBlue:
+    //            var tl = model.MainVFX.main;
+    //            tl.startColor = model.Two_LightBlue;
 
-                var post3 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex3 = post3.prints[0].gameObject.GetComponent<Decal>();
-                tex3.AlbedoColor = model.Two_LightBlue;
-                break;
-            case eColor.Two_ColdYellow:
-                var tc = model.MainVFX.main;
-                tc.startColor = model.Two_ColdYellow;
+    //            var post3 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex3 = post3.prints[0].gameObject.GetComponent<Decal>();
+    //            tex3.AlbedoColor = model.Two_LightBlue;
+    //            break;
+    //        case eColor.Two_ColdYellow:
+    //            var tc = model.MainVFX.main;
+    //            tc.startColor = model.Two_ColdYellow;
 
-                var post4 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex4 = post4.prints[0].gameObject.GetComponent<Decal>();
-                tex4.AlbedoColor = model.Two_ColdYellow;
-                break;
-            case eColor.Three_Green_Blue:
-                var tgb = model.MainVFX.main;
-                tgb.startColor = model.Three_Green_Blue;
+    //            var post4 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex4 = post4.prints[0].gameObject.GetComponent<Decal>();
+    //            tex4.AlbedoColor = model.Two_ColdYellow;
+    //            break;
+    //        case eColor.Three_Green_Blue:
+    //            var tgb = model.MainVFX.main;
+    //            tgb.startColor = model.Three_Green_Blue;
 
-                var post5 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex5 = post5.prints[0].gameObject.GetComponent<Decal>();
-                tex5.AlbedoColor = model.Three_Green_Blue;
-                break;
-            case eColor.Three_Orange:
-                var to = model.MainVFX.main;
-                to.startColor = model.Three_Orange;
+    //            var post5 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex5 = post5.prints[0].gameObject.GetComponent<Decal>();
+    //            tex5.AlbedoColor = model.Three_Green_Blue;
+    //            break;
+    //        case eColor.Three_Orange:
+    //            var to = model.MainVFX.main;
+    //            to.startColor = model.Three_Orange;
 
-                var post6 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex6 = post6.prints[0].gameObject.GetComponent<Decal>();
-                tex6.AlbedoColor = model.Three_Orange;
-                break;
-            case eColor.Four_Green_Yellow:
-                var fgy = model.MainVFX.main;
-                fgy.startColor = model.Four_Green_Yellow;
+    //            var post6 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex6 = post6.prints[0].gameObject.GetComponent<Decal>();
+    //            tex6.AlbedoColor = model.Three_Orange;
+    //            break;
+    //        case eColor.Four_Green_Yellow:
+    //            var fgy = model.MainVFX.main;
+    //            fgy.startColor = model.Four_Green_Yellow;
 
-                var post7 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex7 = post7.prints[0].gameObject.GetComponent<Decal>();
-                tex7.AlbedoColor = model.Four_Green_Yellow;
-                break;
-            case eColor.Four_Red_Purple:
-                var frp = model.MainVFX.main;
-                frp.startColor = model.Four_Red_Purple;
+    //            var post7 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex7 = post7.prints[0].gameObject.GetComponent<Decal>();
+    //            tex7.AlbedoColor = model.Four_Green_Yellow;
+    //            break;
+    //        case eColor.Four_Red_Purple:
+    //            var frp = model.MainVFX.main;
+    //            frp.startColor = model.Four_Red_Purple;
 
-                var post8 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex8 = post8.prints[0].gameObject.GetComponent<Decal>();
-                tex8.AlbedoColor = model.Four_Red_Purple;
-                break;
-            default:
-                break;
-        }
-    }
+    //            var post8 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+    //            var tex8 = post8.prints[0].gameObject.GetComponent<Decal>();
+    //            tex8.AlbedoColor = model.Four_Red_Purple;
+    //            break;
+    //        default:
+    //            break;
+    //    }
+    //}
 
     public void CheckMapColor()
     {
@@ -378,9 +407,10 @@ public class Actor : NetworkBehaviour
         Destroy(shoot, 1);
     }
 
-    public void TakeDamege(PlayerActor atker,PlayerActor target)
+    public void TakeDamege(Actor atker,Actor target)
     {
         target.data.health -= atker.data.playerShellDamage;
+        shake.PlayerUnderAttackShake();
     }
 
     [Command]

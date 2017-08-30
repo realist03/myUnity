@@ -7,6 +7,9 @@ public class PlayerActor : Actor
 {
     PlayerCamera newCamera;
 
+    bool isInkLow = false;
+    bool isReInk = false;
+
     protected override void Init()
     {
         base.Init();
@@ -41,6 +44,7 @@ public class PlayerActor : Actor
             model.InkFishModel.SetActive(false);
         }
     }
+
 
 
 }
