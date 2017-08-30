@@ -171,83 +171,83 @@ public class Actor : NetworkBehaviour
 
         Debug.Log(gameObject.name+"的颜色为"+curColor);
 
-        //SetCurColor();
+        SetCurColor();
     }
 
-    //public void SetCurColor()
-    //{
-    //    switch (curColor)
-    //    {
-    //        case eColor.None:
-    //            break;
-    //        case eColor.One_Purple:
-    //            var op = model.MainVFX.main;
-    //            op.startColor = model.One_Purple;
+    public void SetCurColor()
+    {
+        switch (curColor)
+        {
+            case eColor.None:
+                break;
+            case eColor.One_Purple:
+                var op = model.MainVFX.main;
+                op.startColor = model.One_Purple;
 
-    //            var post1 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex1 = post1.prints[0].gameObject.GetComponent<Decal>();
-    //            tex1.AlbedoColor = model.One_Purple;
-    //            break;
-    //        case eColor.One_WarmYellow:
-    //            var ow = model.MainVFX.main;
-    //            ow.startColor = model.One_WarmYellow;
+                var post1 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex1 = post1.prints[0].gameObject.GetComponent<Decal>();
+                tex1.AlbedoColor = model.One_Purple;
+                break;
+            case eColor.One_WarmYellow:
+                var ow = model.MainVFX.main;
+                ow.startColor = model.One_WarmYellow;
 
-    //            var post2 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex2 = post2.prints[0].gameObject.GetComponent<Decal>();
-    //            tex2.AlbedoColor = model.One_WarmYellow;
-    //            break;
-    //        case eColor.Two_LightBlue:
-    //            var tl = model.MainVFX.main;
-    //            tl.startColor = model.Two_LightBlue;
+                var post2 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex2 = post2.prints[0].gameObject.GetComponent<Decal>();
+                tex2.AlbedoColor = model.One_WarmYellow;
+                break;
+            case eColor.Two_LightBlue:
+                var tl = model.MainVFX.main;
+                tl.startColor = model.Two_LightBlue;
 
-    //            var post3 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex3 = post3.prints[0].gameObject.GetComponent<Decal>();
-    //            tex3.AlbedoColor = model.Two_LightBlue;
-    //            break;
-    //        case eColor.Two_ColdYellow:
-    //            var tc = model.MainVFX.main;
-    //            tc.startColor = model.Two_ColdYellow;
+                var post3 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex3 = post3.prints[0].gameObject.GetComponent<Decal>();
+                tex3.AlbedoColor = model.Two_LightBlue;
+                break;
+            case eColor.Two_ColdYellow:
+                var tc = model.MainVFX.main;
+                tc.startColor = model.Two_ColdYellow;
 
-    //            var post4 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex4 = post4.prints[0].gameObject.GetComponent<Decal>();
-    //            tex4.AlbedoColor = model.Two_ColdYellow;
-    //            break;
-    //        case eColor.Three_Green_Blue:
-    //            var tgb = model.MainVFX.main;
-    //            tgb.startColor = model.Three_Green_Blue;
+                var post4 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex4 = post4.prints[0].gameObject.GetComponent<Decal>();
+                tex4.AlbedoColor = model.Two_ColdYellow;
+                break;
+            case eColor.Three_Green_Blue:
+                var tgb = model.MainVFX.main;
+                tgb.startColor = model.Three_Green_Blue;
 
-    //            var post5 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex5 = post5.prints[0].gameObject.GetComponent<Decal>();
-    //            tex5.AlbedoColor = model.Three_Green_Blue;
-    //            break;
-    //        case eColor.Three_Orange:
-    //            var to = model.MainVFX.main;
-    //            to.startColor = model.Three_Orange;
+                var post5 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex5 = post5.prints[0].gameObject.GetComponent<Decal>();
+                tex5.AlbedoColor = model.Three_Green_Blue;
+                break;
+            case eColor.Three_Orange:
+                var to = model.MainVFX.main;
+                to.startColor = model.Three_Orange;
 
-    //            var post6 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex6 = post6.prints[0].gameObject.GetComponent<Decal>();
-    //            tex6.AlbedoColor = model.Three_Orange;
-    //            break;
-    //        case eColor.Four_Green_Yellow:
-    //            var fgy = model.MainVFX.main;
-    //            fgy.startColor = model.Four_Green_Yellow;
+                var post6 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex6 = post6.prints[0].gameObject.GetComponent<Decal>();
+                tex6.AlbedoColor = model.Three_Orange;
+                break;
+            case eColor.Four_Green_Yellow:
+                var fgy = model.MainVFX.main;
+                fgy.startColor = model.Four_Green_Yellow;
 
-    //            var post7 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex7 = post7.prints[0].gameObject.GetComponent<Decal>();
-    //            tex7.AlbedoColor = model.Four_Green_Yellow;
-    //            break;
-    //        case eColor.Four_Red_Purple:
-    //            var frp = model.MainVFX.main;
-    //            frp.startColor = model.Four_Red_Purple;
+                var post7 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex7 = post7.prints[0].gameObject.GetComponent<Decal>();
+                tex7.AlbedoColor = model.Four_Green_Yellow;
+                break;
+            case eColor.Four_Red_Purple:
+                var frp = model.MainVFX.main;
+                frp.startColor = model.Four_Red_Purple;
 
-    //            var post8 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-    //            var tex8 = post8.prints[0].gameObject.GetComponent<Decal>();
-    //            tex8.AlbedoColor = model.Four_Red_Purple;
-    //            break;
-    //        default:
-    //            break;
-    //    }
-    //}
+                var post8 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
+                var tex8 = post8.prints[0].gameObject.GetComponent<Decal>();
+                tex8.AlbedoColor = model.Four_Red_Purple;
+                break;
+            default:
+                break;
+        }
+    }
 
     public void CheckMapColor()
     {
