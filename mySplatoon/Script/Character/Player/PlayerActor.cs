@@ -18,13 +18,8 @@ public class PlayerActor : Actor
         {
             newCamera.character = transform;
         }
-	}
+    }
 	
-	protected override void Update ()
-    {
-        base.Update();
-	}
-
     public void TransToInkFish()
     {
         if(curFish == eInkFish.Human)

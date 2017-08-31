@@ -31,6 +31,8 @@ public class ActorData : NetworkBehaviour
     public float shootTimer;
     public float shootBlank;
 
+    public int reSpawnTime;
+
     [SyncVar]
     public float health;
 
@@ -40,13 +42,23 @@ public class ActorData : NetworkBehaviour
     [SyncVar]
     public int playerShellDamage;
 
+    [SyncVar]
+    public float spawnTimer;
+
     public bool isInkFish = false;
     public bool isDifferent = false;
     public bool isSame = false;
     public bool isReInk = false;
+    public bool isInkLow = false;
+
+    [SyncVar]
+    public bool isDie = false;
 
     float damageBlank = 1;
 
     float damageTImer;
+
+    public float healthMax = 100;
+    public float inkMax = 100;
 }
 	

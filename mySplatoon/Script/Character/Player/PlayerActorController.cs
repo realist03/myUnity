@@ -33,16 +33,16 @@ public class PlayerActorController : NetworkBehaviour
             player.Jump();
         }
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
             player.Shoot();
         }
 
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetMouseButton(1))
         {
             player.TransToInkFish();
         }
-        if (Input.GetKeyUp(KeyCode.E))
+        if (Input.GetMouseButtonUp(1))
         {
             player.TransToHuman();
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using Prototype.NetworkLobby;
+using UnityEngine.UI;
 
 public class Actor : NetworkBehaviour
 {
@@ -10,6 +11,10 @@ public class Actor : NetworkBehaviour
     public ActorData data;
     [HideInInspector]
     public ActorModel model;
+
+    public Vector3 spawn;
+
+    public Image fillImage;
 
     Rigidbody rigid;
 
@@ -71,12 +76,10 @@ public class Actor : NetworkBehaviour
 
     public void Start()
     {
+        spawn = gameObject.transform.position;
         gameObject.name = "Player" + netId.Value;
         Init();
     }
-
-
-
 
     protected virtual void Init()
     {
@@ -86,24 +89,30 @@ public class Actor : NetworkBehaviour
         }
     }
 
-
-
-
     protected virtual void Update()
     {
+        if (GameMode.isGameOver == true)
+            return;
+
+        if (data.isDie)
+        {
+            return;
+        }
+
         CheckMapColor();
         CheckCurJumpState();
         data.shootTimer += Time.deltaTime;
-
 
         if (isLocalPlayer)
         {
             CmdTeamId(netId.Value, data.TeamID);
         }
+        CheckIsInkLow();
+        CheckIsReInk();
+        CheckPainted();
+        RegenerateInk();
+        RegenerateHealth();
     }
-
-
-
 
     [Command]
     public void CmdTeamId(uint rNetId, int value)
@@ -120,7 +129,6 @@ public class Actor : NetworkBehaviour
             InitCurColor();
         }
     }
-
 
     public void InitCurColor()
     {
@@ -187,6 +195,8 @@ public class Actor : NetworkBehaviour
                 var post1 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex1 = post1.prints[0].gameObject.GetComponent<Decal>();
                 tex1.AlbedoColor = model.One_Purple;
+
+                fillImage.color = model.One_Purple;
                 break;
             case eColor.One_WarmYellow:
                 var ow = model.MainVFX.main;
@@ -195,6 +205,8 @@ public class Actor : NetworkBehaviour
                 var post2 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex2 = post2.prints[0].gameObject.GetComponent<Decal>();
                 tex2.AlbedoColor = model.One_WarmYellow;
+
+                fillImage.color = model.One_WarmYellow;
                 break;
             case eColor.Two_LightBlue:
                 var tl = model.MainVFX.main;
@@ -203,6 +215,8 @@ public class Actor : NetworkBehaviour
                 var post3 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex3 = post3.prints[0].gameObject.GetComponent<Decal>();
                 tex3.AlbedoColor = model.Two_LightBlue;
+
+                fillImage.color = model.Two_LightBlue;
                 break;
             case eColor.Two_ColdYellow:
                 var tc = model.MainVFX.main;
@@ -211,6 +225,8 @@ public class Actor : NetworkBehaviour
                 var post4 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex4 = post4.prints[0].gameObject.GetComponent<Decal>();
                 tex4.AlbedoColor = model.Two_ColdYellow;
+
+                fillImage.color = model.Two_ColdYellow;
                 break;
             case eColor.Three_Green_Blue:
                 var tgb = model.MainVFX.main;
@@ -219,6 +235,8 @@ public class Actor : NetworkBehaviour
                 var post5 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex5 = post5.prints[0].gameObject.GetComponent<Decal>();
                 tex5.AlbedoColor = model.Three_Green_Blue;
+
+                fillImage.color = model.Three_Green_Blue;
                 break;
             case eColor.Three_Orange:
                 var to = model.MainVFX.main;
@@ -227,6 +245,8 @@ public class Actor : NetworkBehaviour
                 var post6 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex6 = post6.prints[0].gameObject.GetComponent<Decal>();
                 tex6.AlbedoColor = model.Three_Orange;
+
+                fillImage.color = model.Three_Orange;
                 break;
             case eColor.Four_Green_Yellow:
                 var fgy = model.MainVFX.main;
@@ -235,6 +255,8 @@ public class Actor : NetworkBehaviour
                 var post7 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex7 = post7.prints[0].gameObject.GetComponent<Decal>();
                 tex7.AlbedoColor = model.Four_Green_Yellow;
+
+                fillImage.color = model.Four_Green_Yellow;
                 break;
             case eColor.Four_Red_Purple:
                 var frp = model.MainVFX.main;
@@ -243,6 +265,8 @@ public class Actor : NetworkBehaviour
                 var post8 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
                 var tex8 = post8.prints[0].gameObject.GetComponent<Decal>();
                 tex8.AlbedoColor = model.Four_Red_Purple;
+
+                fillImage.color = model.Four_Red_Purple;
                 break;
             default:
                 break;
@@ -298,7 +322,36 @@ public class Actor : NetworkBehaviour
         }
     }
 
+    public void CheckIsDie()
+    {
+        if (!data.isDie && data.health <= 0)
+        {
+            data.isDie = true;
 
+            Die();
+        }
+    }
+
+    public void CheckIsReInk()
+    {
+        if (curFish == eInkFish.InkFish && curSame == eSame.Same)
+        {
+            data.isReInk = true;
+        }
+        else
+            data.isReInk = false;
+        
+    }
+
+    public void CheckIsInkLow()
+    {
+        if (data.ink <= 10)
+        {
+            data.isInkLow = true;
+        }
+        else
+            data.isInkLow = false;
+    }
 
     public void Move(float v,float h)
     {
@@ -372,18 +425,18 @@ public class Actor : NetworkBehaviour
 
     public void Shoot()
     {
-        if(curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank)
+        if(curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
         {
             return;
         }
 
         data.shootTimer = 0;
-
+        data.ink -= 10;
         ParticleSystem shoot;
 
         shoot = Instantiate(model.MainVFX, model.muzzle.position, model.MainVFX.gameObject.transform.rotation, transform) as ParticleSystem;
         shoot.gameObject.SetActive(true);
-        Destroy(shoot, 1);
+        Destroy(shoot, 2);
     }
     [Command]
     public void CmdShoot()
@@ -393,24 +446,26 @@ public class Actor : NetworkBehaviour
     [ClientRpc]
     public void RpcShoot()
     {
-        if (curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank)
+        if (curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 5)
         {
             return;
         }
 
         data.shootTimer = 0;
-
+        data.ink -= 10;
         ParticleSystem shoot;
 
         shoot = Instantiate(model.MainVFX, model.muzzle.position, model.MainVFX.gameObject.transform.rotation, transform) as ParticleSystem;
         shoot.gameObject.SetActive(true);
-        Destroy(shoot, 1);
+        Destroy(shoot, 2);
     }
 
-    public void TakeDamege(Actor atker,Actor target)
+    public void TakeDamage(Actor atker,Actor target)
     {
+
         target.data.health -= atker.data.playerShellDamage;
-        shake.PlayerUnderAttackShake();
+        CheckIsDie();
+        //shake.PlayerUnderAttackShake();
     }
 
     [Command]
@@ -433,14 +488,54 @@ public class Actor : NetworkBehaviour
         }
     }
 
-    //[Command]
-    //public void CmdTakeDamage(PlayerActor atker, PlayerActor target)
-    //{
-    //    RpcTakeDamage(atker,target);
-    //}
-    //[ClientRpc]
-    //public void RpcTakeDamage(PlayerActor atker, PlayerActor target)
-    //{
-    //    target.data.health -= atker.data.playerShellDamage;
-    //}
+    private Renderer[] renders;
+
+    public void Die()
+    {
+
+        renders = gameObject.GetComponentsInChildren<Renderer>();
+
+        foreach (var render in renders)
+        {
+            render.gameObject.SetActive(false);
+        }
+
+        Util.DelayCall(7, () => 
+        {
+            Respawn();
+        });
+    }
+
+
+    public void Respawn()
+    {
+        data.health = data.healthMax;
+        data.isDie = false;
+        gameObject.transform.position = spawn;
+
+        foreach (var render in renders)
+        {
+            render.gameObject.SetActive(true);
+        }
+    }
+
+    public void RegenerateInk()
+    {
+        if(data.ink < data.inkMax)
+        {
+            data.ink += 0.1f;
+        }
+        
+        if(data.isReInk)
+        {
+            data.ink += 0.6f;
+        }
+    }
+    public void RegenerateHealth()
+    {
+        if(data.health < data.healthMax)
+        {
+            data.health += 0.1f;
+        }
+    }
 }

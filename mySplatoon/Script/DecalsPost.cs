@@ -51,7 +51,7 @@ public class DecalsPost : Printer
             Debug.LogWarning("Particle system must send collision messages for the particle system to print decals. This option can be enabled under the collisions menu.");
         }
     }
-    
+
     void OnParticleCollision(GameObject other)
     {
         if (Application.isPlaying)
@@ -78,14 +78,14 @@ public class DecalsPost : Printer
                     surface = hit.collider.transform;
 
 
-                    Debug.Log("被打中"+ hit.collider.name);
+                    Debug.Log("被打中" + hit.collider.name);
                     if (hit.collider.tag == "Enemy" || (hit.collider.tag == "Player"))
                     {
                         var get = hit.collider.gameObject.GetComponentInParent<Actor>();
 
-                        if(shellCurColor != get.curColor)
+                        if (shellCurColor != get.curColor)
                         {
-                            //get.TakeDamage(20);
+                            get.TakeDamage(actor,get);
                             Debug.Log("被打中");
                         }
                     }
@@ -101,7 +101,7 @@ public class DecalsPost : Printer
                     var posY = Mathf.FloorToInt(position.y);
                     var posZ = Mathf.FloorToInt(position.z);
 
-                    Vector3 intPos = new Vector3(posX+0.5f, position.y, posZ+0.56f);
+                    Vector3 intPos = new Vector3(posX + 0.5f, position.y, posZ + 0.56f);
 
                     if (Mapping.map.ContainsKey(new Vector2(posX, posZ)))
                     {
@@ -111,7 +111,7 @@ public class DecalsPost : Printer
                             continue;
                         }
                         else
-                        { 
+                        {
                             actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
