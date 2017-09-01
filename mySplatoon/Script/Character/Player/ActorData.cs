@@ -19,13 +19,18 @@ public class ActorData : NetworkBehaviour
 
     //public Transform muzzle;
     public float moveSpeed;
+    public float normalSpeed;
     public float turnSpeed;
     public float jumpHeight;
+    public float normalHeight;
 
     public float rushSpeed;
     public float rushJumpHeight;
 
     public float difSpeed;
+
+    public int power;
+    public int powerMax;
 
     [HideInInspector]
     public float shootTimer;

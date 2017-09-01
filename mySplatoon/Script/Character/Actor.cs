@@ -20,6 +20,10 @@ public class Actor : NetworkBehaviour
 
     CameraShake shake;
 
+    PlayerCameraFreeLook camera;
+
+    public bool isMove = false;
+
     public enum eColor
     {
         None=0,
@@ -40,7 +44,6 @@ public class Actor : NetworkBehaviour
     public enum eState
     {
         None,
-        Move,
         Jump,
         Fire,
     }
@@ -70,6 +73,7 @@ public class Actor : NetworkBehaviour
         rigid = GetComponent<Rigidbody>();
         data = GetComponent<ActorData>();
         shake = FindObjectOfType<CameraShake>();
+        camera = FindObjectOfType<PlayerCameraFreeLook>();
     }
 
 
@@ -112,6 +116,7 @@ public class Actor : NetworkBehaviour
         CheckPainted();
         RegenerateInk();
         RegenerateHealth();
+        CheckRunVFX();
     }
 
     [Command]
@@ -189,84 +194,155 @@ public class Actor : NetworkBehaviour
             case eColor.None:
                 break;
             case eColor.One_Purple:
-                var op = model.MainVFX.main;
-                op.startColor = model.One_Purple;
+                var ps1 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps1.Length; i++)
+                {
+                    var  item = ps1[i].main;
+                    item.startColor = model.One_Purple;
 
-                var post1 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex1 = post1.prints[0].gameObject.GetComponent<Decal>();
-                tex1.AlbedoColor = model.One_Purple;
+                    var post = ps1[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        continue;
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.One_Purple;
+                }
 
                 fillImage.color = model.One_Purple;
+
+                model.inkBag.sharedMaterial = model.m_One_Purple;
                 break;
             case eColor.One_WarmYellow:
-                var ow = model.MainVFX.main;
-                ow.startColor = model.One_WarmYellow;
+                var ps2 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps2.Length; i++)
+                {
+                    var item = ps2[i].main;
+                    item.startColor = model.One_WarmYellow;
 
-                var post2 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex2 = post2.prints[0].gameObject.GetComponent<Decal>();
-                tex2.AlbedoColor = model.One_WarmYellow;
+                    var post = ps2[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        continue;
+
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.One_WarmYellow;
+                }
 
                 fillImage.color = model.One_WarmYellow;
+
+                model.inkBag.sharedMaterial = model.m_One_WarmYellow;
                 break;
             case eColor.Two_LightBlue:
-                var tl = model.MainVFX.main;
-                tl.startColor = model.Two_LightBlue;
+                var ps3 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps3.Length; i++)
+                {
+                    var item = ps3[i].main;
+                    item.startColor = model.Two_LightBlue;
 
-                var post3 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex3 = post3.prints[0].gameObject.GetComponent<Decal>();
-                tex3.AlbedoColor = model.Two_LightBlue;
+                    var post = ps3[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        continue;
+
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.Two_LightBlue;
+                }
 
                 fillImage.color = model.Two_LightBlue;
+
+                model.inkBag.sharedMaterial = model.m_Two_LightBlue;
                 break;
             case eColor.Two_ColdYellow:
-                var tc = model.MainVFX.main;
-                tc.startColor = model.Two_ColdYellow;
+                var ps4 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps4.Length; i++)
+                {
+                    var item = ps4[i].main;
+                    item.startColor = model.Two_ColdYellow;
 
-                var post4 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex4 = post4.prints[0].gameObject.GetComponent<Decal>();
-                tex4.AlbedoColor = model.Two_ColdYellow;
+                    var post = ps4[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        continue;
+
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.Two_ColdYellow;
+                }
 
                 fillImage.color = model.Two_ColdYellow;
+
+                model.inkBag.sharedMaterial = model.m_Two_ColdYellow;
                 break;
             case eColor.Three_Green_Blue:
-                var tgb = model.MainVFX.main;
-                tgb.startColor = model.Three_Green_Blue;
+                var ps5 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps5.Length; i++)
+                {
+                    var item = ps5[i].main;
+                    item.startColor = model.Three_Green_Blue;
 
-                var post5 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex5 = post5.prints[0].gameObject.GetComponent<Decal>();
-                tex5.AlbedoColor = model.Three_Green_Blue;
+                    var post = ps5[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        continue;
+
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.Three_Green_Blue;
+                }
 
                 fillImage.color = model.Three_Green_Blue;
+
+                model.inkBag.sharedMaterial = model.m_Three_Green_Blue;
                 break;
             case eColor.Three_Orange:
-                var to = model.MainVFX.main;
-                to.startColor = model.Three_Orange;
+                var ps6 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps6.Length; i++)
+                {
+                    var item = ps6[i].main;
+                    item.startColor = model.Three_Orange;
 
-                var post6 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex6 = post6.prints[0].gameObject.GetComponent<Decal>();
-                tex6.AlbedoColor = model.Three_Orange;
+                    var post = ps6[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        continue;
+
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.Three_Orange;
+                }
 
                 fillImage.color = model.Three_Orange;
+
+                model.inkBag.sharedMaterial = model.m_Three_Orange;
                 break;
             case eColor.Four_Green_Yellow:
-                var fgy = model.MainVFX.main;
-                fgy.startColor = model.Four_Green_Yellow;
+                var ps7 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps7.Length; i++)
+                {
+                    var item = ps7[i].main;
+                    item.startColor = model.Four_Green_Yellow;
 
-                var post7 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex7 = post7.prints[0].gameObject.GetComponent<Decal>();
-                tex7.AlbedoColor = model.Four_Green_Yellow;
+                    var post = ps7[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        continue;
+
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.Four_Green_Yellow;
+                }
 
                 fillImage.color = model.Four_Green_Yellow;
+
+                model.inkBag.sharedMaterial = model.m_Four_Green_Yellow;
                 break;
             case eColor.Four_Red_Purple:
-                var frp = model.MainVFX.main;
-                frp.startColor = model.Four_Red_Purple;
+                var ps8 = model.GetComponentsInChildren<ParticleSystem>();
+                for (int i = 0; i < ps8.Length; i++)
+                {
+                    var item = ps8[i].main;
+                    item.startColor = model.Four_Red_Purple;
 
-                var post8 = model.MainVFX.gameObject.GetComponent<DecalsPost>();
-                var tex8 = post8.prints[0].gameObject.GetComponent<Decal>();
-                tex8.AlbedoColor = model.Four_Red_Purple;
+                    var post = ps8[i].GetComponent<DecalsPost>();
+                    if (post == null)
+                        return;
+
+                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                    tex.AlbedoColor = model.Four_Red_Purple;
+                }
 
                 fillImage.color = model.Four_Red_Purple;
+
+                model.inkBag.sharedMaterial = model.m_Four_Red_Purple;
                 break;
             default:
                 break;
@@ -303,10 +379,15 @@ public class Actor : NetworkBehaviour
 
     public void CheckPainted()
     {
-        if(curFish == eInkFish.InkFish && curSame == eSame.Same)
+        if (curFish == eInkFish.InkFish && curSame == eSame.Same)
         {
             data.moveSpeed = data.rushSpeed;
             data.jumpHeight = data.rushJumpHeight;
+        }
+        else
+        {
+            data.moveSpeed = data.normalSpeed;
+            data.jumpHeight = data.normalHeight; ;
         }
     }
 
@@ -429,14 +510,13 @@ public class Actor : NetworkBehaviour
         {
             return;
         }
-
+        camera.ApplyRecoil(60, 0.2f);
         data.shootTimer = 0;
         data.ink -= 10;
-        ParticleSystem shoot;
+        GameObject shoot;
 
-        shoot = Instantiate(model.MainVFX, model.muzzle.position, model.MainVFX.gameObject.transform.rotation, transform) as ParticleSystem;
+        shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
         shoot.gameObject.SetActive(true);
-        Destroy(shoot, 2);
     }
     [Command]
     public void CmdShoot()
@@ -453,9 +533,9 @@ public class Actor : NetworkBehaviour
 
         data.shootTimer = 0;
         data.ink -= 10;
-        ParticleSystem shoot;
+        GameObject shoot;
 
-        shoot = Instantiate(model.MainVFX, model.muzzle.position, model.MainVFX.gameObject.transform.rotation, transform) as ParticleSystem;
+        shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
         shoot.gameObject.SetActive(true);
         Destroy(shoot, 2);
     }
@@ -464,8 +544,12 @@ public class Actor : NetworkBehaviour
     {
 
         target.data.health -= atker.data.playerShellDamage;
+        ParticleSystem atkVFX;
+        atkVFX = Instantiate(model.underAtk, target.transform);
+        Destroy(atkVFX, 2);
         CheckIsDie();
-        //shake.PlayerUnderAttackShake();
+        if(isLocalPlayer)
+        shake.PlayerUnderAttackShake();
     }
 
     [Command]
@@ -473,8 +557,6 @@ public class Actor : NetworkBehaviour
     {
         RpcGetMapInfo(rPos, rColor);
     }
-
-
     [ClientRpc]
     public void RpcGetMapInfo(Vector2 rPos, int rColor)
     {
@@ -486,6 +568,17 @@ public class Actor : NetworkBehaviour
         {
             Mapping.map[rPos] = (eColor)rColor;
         }
+    }
+
+    [Command]
+    public void CmdRemoveMapInfo(Vector2 rPos)
+    {
+        RpcRemoveMapInfo(rPos);
+    }
+    [ClientRpc]
+    public void RpcRemoveMapInfo(Vector2 rPos)
+    {
+        Mapping.map.Remove(rPos);
     }
 
     private Renderer[] renders;
@@ -521,14 +614,17 @@ public class Actor : NetworkBehaviour
 
     public void RegenerateInk()
     {
-        if(data.ink < data.inkMax)
+        if(data.ink >= data.inkMax)
         {
-            data.ink += 0.1f;
+            data.ink = data.inkMax;
+            return;
         }
-        
-        if(data.isReInk)
+
+        data.ink += 0.1f;
+
+        if (data.isReInk)
         {
-            data.ink += 0.6f;
+            data.ink += 0.8f;
         }
     }
     public void RegenerateHealth()
@@ -537,5 +633,19 @@ public class Actor : NetworkBehaviour
         {
             data.health += 0.1f;
         }
+    }
+
+    public void AddPower()
+    {
+        if(data.power < data.powerMax)
+            data.power += 10;
+    }
+
+    public void CheckRunVFX()
+    {
+        if (isMove == true && curSame == eSame.Same && curState != eState.Jump)
+            model.runVFX.gameObject.SetActive(true);
+        else
+            model.runVFX.gameObject.SetActive(false);
     }
 }

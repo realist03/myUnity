@@ -71,7 +71,7 @@ public class DecalsPost : Printer
 
                 //Calculate final position and surface normal
                 RaycastHit hit;
-                if (Physics.Raycast(position, -normal, out hit, Mathf.Infinity, layerMask))
+                if (Physics.Raycast(position, -normal, out hit, 2, layerMask))
                 {
                     position = hit.point;
                     normal = hit.normal;
@@ -79,7 +79,7 @@ public class DecalsPost : Printer
 
 
                     Debug.Log("被打中" + hit.collider.name);
-                    if (hit.collider.tag == "Enemy" || (hit.collider.tag == "Player"))
+                    if (hit.collider.tag == "Player")
                     {
                         var get = hit.collider.gameObject.GetComponentInParent<Actor>();
 
@@ -112,6 +112,7 @@ public class DecalsPost : Printer
                         }
                         else
                         {
+                            actor.CmdRemoveMapInfo(new Vector2(posX, posZ));
                             actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
@@ -125,5 +126,6 @@ public class DecalsPost : Printer
                 i++;
             }
         }
+        Destroy(gameObject,2);
     }
 }

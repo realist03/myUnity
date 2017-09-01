@@ -8,7 +8,11 @@ public class ActorModel : MonoBehaviour
     public GameObject HumanModel;
     public GameObject InkFishModel;
 
-    public ParticleSystem MainVFX;
+    public GameObject mainVFX;
+
+    public ParticleSystem runVFX;
+
+    public ParticleSystem underAtk;
 
     public Color One_Purple;
     public Color One_WarmYellow;
@@ -19,8 +23,20 @@ public class ActorModel : MonoBehaviour
     public Color Four_Green_Yellow;
     public Color Four_Red_Purple;
 
+    public Material m_One_Purple;
+    public Material m_One_WarmYellow;
+    public Material m_Two_LightBlue;
+    public Material m_Two_ColdYellow;
+    public Material m_Three_Green_Blue;
+    public Material m_Three_Orange;
+    public Material m_Four_Green_Yellow;
+    public Material m_Four_Red_Purple;
+
+    public Renderer inkBag;
+
     void Start ()
     {
+
     }
 
     void Update ()

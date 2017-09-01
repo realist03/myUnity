@@ -28,6 +28,13 @@ public class PlayerActorController : NetworkBehaviour
         x = Input.GetAxis("MouseHorizontal");
         y = Input.GetAxis("MouseVertical");
 
+        if (h != 0 || v != 0)
+        {
+            player.isMove = true;
+        }
+        else
+            player.isMove = false;
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             player.Jump();
