@@ -67,9 +67,16 @@ public class PlayerActorController : NetworkBehaviour
         if (Input.GetMouseButton(0))
             player.CmdShoot();
 
+        if (Input.GetMouseButton(1))
+        {
+            player.CmdT2Fish();
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            player.CmdT2Human();
+        }
+
         player.Move(v, h);
         player.Rotate(y);
-
-        player.CmdRotate(y);
     }
 }

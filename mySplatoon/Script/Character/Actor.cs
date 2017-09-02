@@ -60,10 +60,13 @@ public class Actor : NetworkBehaviour
         Same,
         Diffent,
     }
-
+    [SyncVar]
     public eInkFish curFish = eInkFish.Human;
+    [SyncVar]
     public eColor curColor = eColor.None;
+    [SyncVar]
     public eState curState = eState.None;
+    [SyncVar]
     public eSame curSame = eSame.None;
 
 
@@ -83,6 +86,12 @@ public class Actor : NetworkBehaviour
         spawn = gameObject.transform.position;
         gameObject.name = "Player" + netId.Value;
         Init();
+        Debug.Log(netId.Value);
+
+        Util.DelayCall(0.5f, () =>
+        {
+            CmdTeamId(netId.Value, data.TeamID);
+        });
     }
 
     protected virtual void Init()
@@ -92,9 +101,9 @@ public class Actor : NetworkBehaviour
             data.TeamID = BattleManager.Instance.curPlayerTeam;
         }
     }
-
     protected virtual void Update()
     {
+        Debug.Log(netId.Value);
         if (GameMode.isGameOver == true)
             return;
 
@@ -107,10 +116,11 @@ public class Actor : NetworkBehaviour
         CheckCurJumpState();
         data.shootTimer += Time.deltaTime;
 
-        if (isLocalPlayer)
-        {
-            CmdTeamId(netId.Value, data.TeamID);
-        }
+        //if (isLocalPlayer)
+        //{
+        //    CmdTeamId(netId.Value, data.TeamID);
+        //}
+
         CheckIsInkLow();
         CheckIsReInk();
         CheckPainted();
@@ -181,7 +191,6 @@ public class Actor : NetworkBehaviour
                 curColor = eColor.Four_Red_Purple;
             }
         }
-
         Debug.Log(gameObject.name+"的颜色为"+curColor);
 
         SetCurColor();
@@ -194,17 +203,26 @@ public class Actor : NetworkBehaviour
             case eColor.None:
                 break;
             case eColor.One_Purple:
-                var ps1 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps1 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps1.Length; i++)
                 {
                     var  item = ps1[i].main;
                     item.startColor = model.One_Purple;
 
                     var post = ps1[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        continue;
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.One_Purple;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.One_Purple;
+                    }
+                    if(ps1[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps1[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_One_Purple;
+                        }
+                    }
                 }
 
                 fillImage.color = model.One_Purple;
@@ -212,18 +230,27 @@ public class Actor : NetworkBehaviour
                 model.inkBag.sharedMaterial = model.m_One_Purple;
                 break;
             case eColor.One_WarmYellow:
-                var ps2 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps2 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps2.Length; i++)
                 {
                     var item = ps2[i].main;
                     item.startColor = model.One_WarmYellow;
 
                     var post = ps2[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        continue;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.One_WarmYellow;
+                    }
 
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.One_WarmYellow;
+                    if (ps2[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps2[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_One_WarmYellow;
+                        }
+                    }
                 }
 
                 fillImage.color = model.One_WarmYellow;
@@ -231,18 +258,27 @@ public class Actor : NetworkBehaviour
                 model.inkBag.sharedMaterial = model.m_One_WarmYellow;
                 break;
             case eColor.Two_LightBlue:
-                var ps3 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps3 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps3.Length; i++)
                 {
                     var item = ps3[i].main;
                     item.startColor = model.Two_LightBlue;
 
                     var post = ps3[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        continue;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.Two_LightBlue;
+                    }
 
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.Two_LightBlue;
+                    if (ps3[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps3[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_Two_LightBlue;
+                        }
+                    }
                 }
 
                 fillImage.color = model.Two_LightBlue;
@@ -250,18 +286,27 @@ public class Actor : NetworkBehaviour
                 model.inkBag.sharedMaterial = model.m_Two_LightBlue;
                 break;
             case eColor.Two_ColdYellow:
-                var ps4 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps4 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps4.Length; i++)
                 {
                     var item = ps4[i].main;
                     item.startColor = model.Two_ColdYellow;
 
                     var post = ps4[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        continue;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.Two_ColdYellow;
+                    }
 
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.Two_ColdYellow;
+                    if (ps4[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps4[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_Two_ColdYellow;
+                        }
+                    }
                 }
 
                 fillImage.color = model.Two_ColdYellow;
@@ -269,18 +314,27 @@ public class Actor : NetworkBehaviour
                 model.inkBag.sharedMaterial = model.m_Two_ColdYellow;
                 break;
             case eColor.Three_Green_Blue:
-                var ps5 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps5 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps5.Length; i++)
                 {
                     var item = ps5[i].main;
                     item.startColor = model.Three_Green_Blue;
 
                     var post = ps5[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        continue;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.Three_Green_Blue;
+                    }
 
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.Three_Green_Blue;
+                    if (ps5[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps5[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_Three_Green_Blue;
+                        }
+                    }
                 }
 
                 fillImage.color = model.Three_Green_Blue;
@@ -288,18 +342,27 @@ public class Actor : NetworkBehaviour
                 model.inkBag.sharedMaterial = model.m_Three_Green_Blue;
                 break;
             case eColor.Three_Orange:
-                var ps6 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps6 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps6.Length; i++)
                 {
                     var item = ps6[i].main;
                     item.startColor = model.Three_Orange;
 
                     var post = ps6[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        continue;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.Three_Orange;
+                    }
 
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.Three_Orange;
+                    if (ps6[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps6[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_Three_Orange;
+                        }
+                    }
                 }
 
                 fillImage.color = model.Three_Orange;
@@ -307,18 +370,27 @@ public class Actor : NetworkBehaviour
                 model.inkBag.sharedMaterial = model.m_Three_Orange;
                 break;
             case eColor.Four_Green_Yellow:
-                var ps7 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps7 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps7.Length; i++)
                 {
                     var item = ps7[i].main;
                     item.startColor = model.Four_Green_Yellow;
 
                     var post = ps7[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        continue;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.Four_Green_Yellow;
+                    }
 
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.Four_Green_Yellow;
+                    if (ps7[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps7[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_Four_Green_Yellow;
+                        }
+                    }
                 }
 
                 fillImage.color = model.Four_Green_Yellow;
@@ -326,18 +398,27 @@ public class Actor : NetworkBehaviour
                 model.inkBag.sharedMaterial = model.m_Four_Green_Yellow;
                 break;
             case eColor.Four_Red_Purple:
-                var ps8 = model.GetComponentsInChildren<ParticleSystem>();
+                var ps8 = model.GetComponentsInChildren<ParticleSystem>(true);
                 for (int i = 0; i < ps8.Length; i++)
                 {
                     var item = ps8[i].main;
                     item.startColor = model.Four_Red_Purple;
 
                     var post = ps8[i].GetComponent<DecalsPost>();
-                    if (post == null)
-                        return;
+                    if (post != null)
+                    {
+                        var tex = post.prints[0].gameObject.GetComponent<Decal>();
+                        tex.AlbedoColor = model.Four_Red_Purple;
+                    }
 
-                    var tex = post.prints[0].gameObject.GetComponent<Decal>();
-                    tex.AlbedoColor = model.Four_Red_Purple;
+                    if (ps8[i].name == "ShellVFX3")
+                    {
+                        var post_m = ps8[i].gameObject.GetComponent<Renderer>();
+                        if (post_m != null)
+                        {
+                            post_m.sharedMaterial = model.m_Four_Red_Purple;
+                        }
+                    }
                 }
 
                 fillImage.color = model.Four_Red_Purple;
@@ -364,8 +445,13 @@ public class Actor : NetworkBehaviour
                 if (mapColor != eColor.None && mapColor != curColor)
                 {
                     curSame = eSame.Diffent;
-                    //Debug.Log("dif");
+                    TakeMapDamage(10);
+
+                    DifEffect();
                 }
+                else
+                    NormalEffect();
+
                 if (mapColor != eColor.None && mapColor == curColor)
                 {
                     curSame = eSame.Same;
@@ -395,6 +481,10 @@ public class Actor : NetworkBehaviour
     {
         if (Physics.Raycast(transform.position, -transform.up, 1))
         {
+            if(curState == eState.Jump)
+            {
+                AddFloorPost(transform.position);
+            }
             curState = eState.None;
         }
         else
@@ -510,13 +600,14 @@ public class Actor : NetworkBehaviour
         {
             return;
         }
-        camera.ApplyRecoil(60, 0.2f);
+        camera.ApplyRecoil(80, 0.2f);
         data.shootTimer = 0;
-        data.ink -= 10;
+        data.ink -= 5;
         GameObject shoot;
 
         shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
         shoot.gameObject.SetActive(true);
+        Destroy(shoot, 2);
     }
     [Command]
     public void CmdShoot()
@@ -540,16 +631,37 @@ public class Actor : NetworkBehaviour
         Destroy(shoot, 2);
     }
 
-    public void TakeDamage(Actor atker,Actor target)
+    public void TakeDamage(Actor atker,Actor target,Vector3 normal)
     {
 
         target.data.health -= atker.data.playerShellDamage;
         ParticleSystem atkVFX;
-        atkVFX = Instantiate(model.underAtk, target.transform);
+        atkVFX = Instantiate(model.underAtk, target.transform.position,Quaternion.Euler(-normal));
+        atkVFX.gameObject.SetActive(true);
         Destroy(atkVFX, 2);
         CheckIsDie();
         if(isLocalPlayer)
         shake.PlayerUnderAttackShake();
+    }
+
+    float temp = 0f;
+    float temp2 = 0f;
+    public void TakeMapDamage(int damage)
+    {
+        temp2 = temp;
+        temp = Time.time;
+
+        if (temp - temp2 < 1)
+            return;
+        data.health -= damage;
+
+        ParticleSystem atkVFX;
+        atkVFX = Instantiate(model.underAtk, transform.position,Quaternion.Euler(0,1,0));
+        atkVFX.gameObject.SetActive(true);
+        Destroy(atkVFX, 2);
+        CheckIsDie();
+        if (isLocalPlayer)
+            shake.PlayerUnderAttackShake();
     }
 
     [Command]
@@ -624,7 +736,7 @@ public class Actor : NetworkBehaviour
 
         if (data.isReInk)
         {
-            data.ink += 0.8f;
+            data.ink += 1f;
         }
     }
     public void RegenerateHealth()
@@ -647,5 +759,23 @@ public class Actor : NetworkBehaviour
             model.runVFX.gameObject.SetActive(true);
         else
             model.runVFX.gameObject.SetActive(false);
+    }
+
+    public void AddFloorPost(Vector3 target)
+    {
+        ParticleSystem post;
+        post = Instantiate(model.floorPost);
+        post.transform.position = target;
+        post.gameObject.SetActive(true);
+        Destroy(post, 1);
+    }
+
+    public void DifEffect()
+    {
+        data.moveSpeed = data.difSpeed;
+    }
+    public void NormalEffect()
+    {
+        data.moveSpeed = data.normalSpeed;
     }
 }

@@ -50,20 +50,17 @@ public class ActorData : NetworkBehaviour
     [SyncVar]
     public float spawnTimer;
 
-    public bool isInkFish = false;
-    public bool isDifferent = false;
-    public bool isSame = false;
+    [SyncVar]
     public bool isReInk = false;
+
+    public bool isInkFish = false;
     public bool isInkLow = false;
 
     [SyncVar]
     public bool isDie = false;
 
-    float damageBlank = 1;
-
-    float damageTImer;
-
     public float healthMax = 100;
+
     public float inkMax = 100;
 }
 	

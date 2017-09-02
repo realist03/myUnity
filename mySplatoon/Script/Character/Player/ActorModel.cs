@@ -14,6 +14,8 @@ public class ActorModel : MonoBehaviour
 
     public ParticleSystem underAtk;
 
+    public ParticleSystem floorPost;
+
     public Color One_Purple;
     public Color One_WarmYellow;
     public Color Two_LightBlue;
