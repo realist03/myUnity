@@ -17,7 +17,7 @@ public class EnemyController : MonoBehaviour
     }
 
 	
-	void Update ()
+	void FixedUpdate ()
     {
         nav.SetDestination(player.position);
 

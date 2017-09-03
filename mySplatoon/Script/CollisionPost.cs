@@ -57,6 +57,5 @@ namespace Es.InkPainter.Sample
                 brush.Color = red;
             }
         }
-
     }
 }

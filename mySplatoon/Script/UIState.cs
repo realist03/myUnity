@@ -24,6 +24,7 @@ public class UIState : MonoBehaviour
 	void Update ()
     {
         inkValue.value = player.ink;
+
         if (player.ink <= 10)
         {
             InkLow.SetActive(true);

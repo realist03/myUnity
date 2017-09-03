@@ -46,9 +46,12 @@ public class Character : MonoBehaviour
 
     bool canShoot;
 
+    HttpUser httpUser;
     Animator animator;
 	void Start ()
     {
+        httpUser = FindObjectOfType<HttpUser>();
+
         animator = GetComponent<Animator>();
     }
 	
@@ -96,6 +99,12 @@ public class Character : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (gameObject.tag == "Player")
+        {
+            httpUser.SendSave();
+            Debug.Log("掉血啦");
+        }
+
         health -= damage;
     }
 
@@ -192,12 +201,12 @@ public class Character : MonoBehaviour
 
         if (ink < 100)
         {
-            ink += 0.05f;
+            ink += 0.03f;
         }
 
         if(health < 100)
         {
-            health += 0.05f;
+            health += 0.03f;
         }
 
         if (GameMode.isGameOver == true)

@@ -37,7 +37,7 @@ public class CameraShake : MonoBehaviour
 
             shake -= Time.deltaTime * decreaseFactor;
         }
-        if(shake < 0.01)
+        if (shake < 0.01)
         {
             shake = 0;
         }
@@ -50,8 +50,8 @@ public class CameraShake : MonoBehaviour
 
     public void PlayerUnderAttackShake()
     {
-        shake = 0.7f;
-        shakeAmount = 0.5f;
+        shake = 0.3f;
+        shakeAmount = 0.1f;
         decreaseFactor = 1.0f;
     }
 

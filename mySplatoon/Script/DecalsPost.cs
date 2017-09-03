@@ -18,26 +18,26 @@ public class DecalsPost : Printer
     private float maxparticleCollisionSize;
     private List<ParticleCollisionEvent> collisionEvents;
 
-    public Character character;
+    public Actor actor;
 
-    Character.chaColor shellCurColor = Character.chaColor.None;
-
+    Actor.eColor shellCurColor = Actor.eColor.None;
 
     void Start()
     {
+
         //Grab Particle System
         partSystem = GetComponent<ParticleSystem>();
 
-        character = GetComponentInParent<Character>();
+        actor = GetComponentInParent<Actor>();
 
-        shellCurColor = character.curColor;
+        shellCurColor = actor.curColor;
 
         if (Application.isPlaying)
         {
             //Initialize collision list
             collisionEvents = new List<ParticleCollisionEvent>();
         }
-        InitColor();
+        //InitColor();
     }
     void Update()
     {
@@ -51,7 +51,7 @@ public class DecalsPost : Printer
             Debug.LogWarning("Particle system must send collision messages for the particle system to print decals. This option can be enabled under the collisions menu.");
         }
     }
-    
+
     void OnParticleCollision(GameObject other)
     {
         if (Application.isPlaying)
@@ -71,17 +71,26 @@ public class DecalsPost : Printer
 
                 //Calculate final position and surface normal
                 RaycastHit hit;
-                if (Physics.Raycast(position, -normal, out hit, Mathf.Infinity, layerMask))
+                if (Physics.Raycast(position, -normal, out hit,2, layerMask) || Physics.CheckSphere(position,10,layerMask))
                 {
+                    actor.AddFloorPost(hit.point);
+
                     position = hit.point;
                     normal = hit.normal;
                     surface = hit.collider.transform;
 
-                    if(hit.collider.tag == "Enemy" || (hit.collider.tag == "Player"))
+
+                    Debug.Log("被打中" + hit.collider.name);
+                    if (hit.collider.tag == "Player")
                     {
-                        var get = hit.collider.gameObject.GetComponentInParent<Character>();
-                        get.TakeDamage(20);
-                        Debug.Log("hit");
+                        var get = hit.collider.gameObject.GetComponentInParent<Actor>();
+
+                        if (shellCurColor != get.curColor)
+                        {
+                            actor.AddFloorPost(get.transform.position);
+                            get.TakeDamage(actor,get, normal);
+                            Debug.Log("被打中");
+                        }
                     }
 
                     //Calculate our rotation
@@ -95,43 +104,30 @@ public class DecalsPost : Printer
                     var posY = Mathf.FloorToInt(position.y);
                     var posZ = Mathf.FloorToInt(position.z);
 
-                    Vector3 intPos = new Vector3(posX+0.5f, position.y, posZ+0.56f);
+                    Vector3 intPos = new Vector3(posX + 0.5f, position.y, posZ + 0.56f);
 
-                    if (Mapping.painted.ContainsKey(new Vector2(posX, posZ)))
+                    if (Mapping.map.ContainsKey(new Vector2(posX, posZ)))
                     {
-                        if (Mapping.painted[new Vector2(posX, posZ)] == shellCurColor)
+                        if (Mapping.map[new Vector2(posX, posZ)] == shellCurColor)
                         {
                             i++;
                             continue;
                         }
                         else
                         {
-                            Mapping.painted[new Vector2(posX, posZ)] = shellCurColor;
+                            actor.CmdRemoveMapInfo(new Vector2(posX, posZ));
+                            actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
                     }
                     else
                     {
-                        Mapping.painted.Add(new Vector2(posX, posZ), character.curColor);
+                        actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)actor.curColor);
                         Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
-                        //Debug.Log("dic:" + posX + "," + posZ);
                     }
                 }
                 i++;
             }
         }
     }
-
-    void InitColor()
-    {
-        if (character.curColor == Character.chaColor.Blue)
-        {
-            shellCurColor = Character.chaColor.Blue;
-        }
-        else
-        {
-            shellCurColor = Character.chaColor.Red;
-        }
-    }
-
 }
