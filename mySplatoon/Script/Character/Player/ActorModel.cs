@@ -16,6 +16,8 @@ public class ActorModel : MonoBehaviour
 
     public ParticleSystem floorPost;
 
+    public GameObject punch;
+
     public Color One_Purple;
     public Color One_WarmYellow;
     public Color Two_LightBlue;

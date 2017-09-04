@@ -50,9 +50,9 @@ public class CameraShake : MonoBehaviour
 
     public void PlayerUnderAttackShake()
     {
-        shake = 0.3f;
+        shake = 0.1f;
         shakeAmount = 0.1f;
-        decreaseFactor = 1.0f;
+        decreaseFactor = 0.5f;
     }
 
     public void EnemytDieShake()
@@ -60,5 +60,12 @@ public class CameraShake : MonoBehaviour
         shake = 0.5f;
         shakeAmount = 0.1f;
         decreaseFactor = 1.5f;
+    }
+
+    public void AtkerShake()
+    {
+        shake = 0.05f;
+        shakeAmount = 0.05f;
+        decreaseFactor = 0.05f;
     }
 }

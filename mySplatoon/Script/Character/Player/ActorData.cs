@@ -35,7 +35,7 @@ public class ActorData : NetworkBehaviour
     [HideInInspector]
     public float shootTimer;
     public float shootBlank;
-
+    public float shootCost;
     public int reSpawnTime;
 
     [SyncVar]

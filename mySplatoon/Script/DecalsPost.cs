@@ -71,23 +71,25 @@ public class DecalsPost : Printer
 
                 //Calculate final position and surface normal
                 RaycastHit hit;
-                if (Physics.Raycast(position, -normal, out hit,2, layerMask) || Physics.CheckSphere(position,10,layerMask))
+                if (Physics.Raycast(position, -normal, out hit, 5, layerMask)/* || Physics.CheckSphere(position,10,layerMask)*/)
                 {
-                    actor.AddFloorPost(hit.point);
 
                     position = hit.point;
                     normal = hit.normal;
                     surface = hit.collider.transform;
 
-
                     Debug.Log("被打中" + hit.collider.name);
+
+                    actor.AddFloorPost(position);
+
                     if (hit.collider.tag == "Player")
                     {
                         var get = hit.collider.gameObject.GetComponentInParent<Actor>();
 
                         if (shellCurColor != get.curColor)
                         {
-                            actor.AddFloorPost(get.transform.position);
+                            actor.AddFloorPost(position);
+                            actor.AddPunchEffect(position);
                             get.TakeDamage(actor,get, normal);
                             Debug.Log("被打中");
                         }

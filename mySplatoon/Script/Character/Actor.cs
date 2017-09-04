@@ -88,10 +88,10 @@ public class Actor : NetworkBehaviour
         Init();
         Debug.Log(netId.Value);
 
-        Util.DelayCall(0.5f, () =>
-        {
-            CmdTeamId(netId.Value, data.TeamID);
-        });
+        //Util.DelayCall(0.5f, () =>
+        //{
+        //    CmdTeamId(netId.Value, data.TeamID);
+        //});
     }
 
     protected virtual void Init()
@@ -116,10 +116,10 @@ public class Actor : NetworkBehaviour
         CheckCurJumpState();
         data.shootTimer += Time.deltaTime;
 
-        //if (isLocalPlayer)
-        //{
-        //    CmdTeamId(netId.Value, data.TeamID);
-        //}
+        if (isLocalPlayer)
+        {
+            CmdTeamId(netId.Value, data.TeamID);
+        }
 
         CheckIsInkLow();
         CheckIsReInk();
@@ -215,7 +215,7 @@ public class Actor : NetworkBehaviour
                         var tex = post.prints[0].gameObject.GetComponent<Decal>();
                         tex.AlbedoColor = model.One_Purple;
                     }
-                    if(ps1[i].name == "ShellVFX3")
+                    if(ps1[i].name == "ShellVFX3" || ps1[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps1[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -243,7 +243,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.One_WarmYellow;
                     }
 
-                    if (ps2[i].name == "ShellVFX3")
+                    if (ps2[i].name == "ShellVFX3" || ps2[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps2[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -271,7 +271,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Two_LightBlue;
                     }
 
-                    if (ps3[i].name == "ShellVFX3")
+                    if (ps3[i].name == "ShellVFX3" || ps3[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps3[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -299,7 +299,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Two_ColdYellow;
                     }
 
-                    if (ps4[i].name == "ShellVFX3")
+                    if (ps4[i].name == "ShellVFX3" || ps4[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps4[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -327,7 +327,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Three_Green_Blue;
                     }
 
-                    if (ps5[i].name == "ShellVFX3")
+                    if (ps5[i].name == "ShellVFX3" || ps5[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps5[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -355,7 +355,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Three_Orange;
                     }
 
-                    if (ps6[i].name == "ShellVFX3")
+                    if (ps6[i].name == "ShellVFX3" || ps6[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps6[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -383,7 +383,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Four_Green_Yellow;
                     }
 
-                    if (ps7[i].name == "ShellVFX3")
+                    if (ps7[i].name == "ShellVFX3" || ps7[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps7[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -411,7 +411,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Four_Red_Purple;
                     }
 
-                    if (ps8[i].name == "ShellVFX3")
+                    if (ps8[i].name == "ShellVFX3" || ps8[i].name == "ShellVFX3_2")
                     {
                         var post_m = ps8[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -600,14 +600,14 @@ public class Actor : NetworkBehaviour
         {
             return;
         }
-        camera.ApplyRecoil(80, 0.2f);
+        camera.ApplyRecoil(60, 0.2f);
         data.shootTimer = 0;
-        data.ink -= 5;
+        data.ink -= data.shootCost;
         GameObject shoot;
 
         shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
         shoot.gameObject.SetActive(true);
-        Destroy(shoot, 2);
+        Destroy(shoot.gameObject, 3);
     }
     [Command]
     public void CmdShoot()
@@ -617,18 +617,18 @@ public class Actor : NetworkBehaviour
     [ClientRpc]
     public void RpcShoot()
     {
-        if (curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 5)
+        if (curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
         {
             return;
         }
-
+        camera.ApplyRecoil(60, 0.2f);
         data.shootTimer = 0;
-        data.ink -= 10;
+        data.ink -= data.shootCost;
         GameObject shoot;
 
         shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
         shoot.gameObject.SetActive(true);
-        Destroy(shoot, 2);
+        Destroy(shoot.gameObject, 3);
     }
 
     public void TakeDamage(Actor atker,Actor target,Vector3 normal)
@@ -638,17 +638,18 @@ public class Actor : NetworkBehaviour
         ParticleSystem atkVFX;
         atkVFX = Instantiate(model.underAtk, target.transform.position,Quaternion.Euler(-normal));
         atkVFX.gameObject.SetActive(true);
-        Destroy(atkVFX, 2);
+        Destroy(atkVFX.gameObject, 3);
         CheckIsDie();
         if(isLocalPlayer)
-        shake.PlayerUnderAttackShake();
+            shake.PlayerUnderAttackShake();
+        if (!isLocalPlayer)
+            shake.AtkerShake();
     }
 
     float temp = 0f;
     float temp2 = 0f;
     public void TakeMapDamage(int damage)
     {
-        temp2 = temp;
         temp = Time.time;
 
         if (temp - temp2 < 1)
@@ -658,10 +659,11 @@ public class Actor : NetworkBehaviour
         ParticleSystem atkVFX;
         atkVFX = Instantiate(model.underAtk, transform.position,Quaternion.Euler(0,1,0));
         atkVFX.gameObject.SetActive(true);
-        Destroy(atkVFX, 2);
+        Destroy(atkVFX.gameObject, 3);
         CheckIsDie();
         if (isLocalPlayer)
             shake.PlayerUnderAttackShake();
+        temp2 = temp;
     }
 
     [Command]
@@ -765,9 +767,17 @@ public class Actor : NetworkBehaviour
     {
         ParticleSystem post;
         post = Instantiate(model.floorPost);
-        post.transform.position = target;
+        post.transform.position = target;        
         post.gameObject.SetActive(true);
-        Destroy(post, 1);
+        Destroy(post.gameObject, 3);
+    }
+
+    public void AddPunchEffect(Vector3 target)
+    {
+        GameObject punch;
+        punch = Instantiate(model.punch);
+        punch.transform.position = target;
+        punch.gameObject.SetActive(true);
     }
 
     public void DifEffect()
