@@ -5,18 +5,18 @@ using UnityEngine;
 public class ActorModel : MonoBehaviour
 {
     public Transform muzzle;
+    public Transform weapon;
     public GameObject HumanModel;
     public GameObject InkFishModel;
+
+    public GameObject punch;
 
     public GameObject mainVFX;
 
     public ParticleSystem runVFX;
-
     public ParticleSystem underAtk;
-
     public ParticleSystem floorPost;
 
-    public GameObject punch;
 
     public Color One_Purple;
     public Color One_WarmYellow;
@@ -38,20 +38,20 @@ public class ActorModel : MonoBehaviour
 
     public Renderer inkBag;
 
-    void Start ()
-    {
+    //void Start ()
+    //{
 
-    }
+    //}
 
-    void Update ()
-    {
-        //Debug.Log(One_Purple);
-        //Debug.Log(One_WarmYellow);
-        //Debug.Log(Two_LightBlue);
-        //Debug.Log(Two_ColdYellow);
-        //Debug.Log(Three_Green_Blue);
-        //Debug.Log(Three_Orange);
-        //Debug.Log(Four_Green_Yellow);
-        //Debug.Log(Four_Red_Purple);
-    }
+    //void Update ()
+    //{
+    //    //Debug.Log(One_Purple);
+    //    //Debug.Log(One_WarmYellow);
+    //    //Debug.Log(Two_LightBlue);
+    //    //Debug.Log(Two_ColdYellow);
+    //    //Debug.Log(Three_Green_Blue);
+    //    //Debug.Log(Three_Orange);
+    //    //Debug.Log(Four_Green_Yellow);
+    //    //Debug.Log(Four_Red_Purple);
+    //}
 }

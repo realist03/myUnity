@@ -7,7 +7,7 @@ public class ActorData : NetworkBehaviour
 {
     public int TeamID;
     public int ID;
-
+    public int weaponID;
     //public Renderer humanModel;
     //public Renderer inkFishModel;
     //public Material blue;

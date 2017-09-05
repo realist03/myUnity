@@ -71,7 +71,7 @@ public class DecalsPost : Printer
 
                 //Calculate final position and surface normal
                 RaycastHit hit;
-                if (Physics.Raycast(position, -normal, out hit, 5, layerMask)/* || Physics.CheckSphere(position,10,layerMask)*/)
+                if (Physics.Raycast(position, -normal, out hit, 5, layerMask))
                 {
 
                     position = hit.point;

@@ -24,6 +24,8 @@ public class Actor : NetworkBehaviour
 
     public bool isMove = false;
 
+    bool isChoose = false;
+
     public enum eColor
     {
         None=0,
@@ -60,6 +62,14 @@ public class Actor : NetworkBehaviour
         Same,
         Diffent,
     }
+
+    public enum eWeapon
+    {
+        Splattershot,
+        Slosher,
+        Charger,
+        Roller,
+    }
     [SyncVar]
     public eInkFish curFish = eInkFish.Human;
     [SyncVar]
@@ -68,7 +78,8 @@ public class Actor : NetworkBehaviour
     public eState curState = eState.None;
     [SyncVar]
     public eSame curSame = eSame.None;
-
+    [SyncVar]
+    public eWeapon curWeapon;
 
     public void Awake()
     {
@@ -88,10 +99,10 @@ public class Actor : NetworkBehaviour
         Init();
         Debug.Log(netId.Value);
 
-        //Util.DelayCall(0.5f, () =>
-        //{
-        //    CmdTeamId(netId.Value, data.TeamID);
-        //});
+        Util.DelayCall(0.5f, () =>
+        {
+            CmdTeamId(netId.Value, data.TeamID);
+        });
     }
 
     protected virtual void Init()
@@ -116,10 +127,10 @@ public class Actor : NetworkBehaviour
         CheckCurJumpState();
         data.shootTimer += Time.deltaTime;
 
-        if (isLocalPlayer)
-        {
-            CmdTeamId(netId.Value, data.TeamID);
-        }
+        //if (isLocalPlayer)
+        //{
+        //    CmdTeamId(netId.Value, data.TeamID);
+        //}
 
         CheckIsInkLow();
         CheckIsReInk();
@@ -127,6 +138,8 @@ public class Actor : NetworkBehaviour
         RegenerateInk();
         RegenerateHealth();
         CheckRunVFX();
+
+        InitWeapon();
     }
 
     [Command]
@@ -430,6 +443,32 @@ public class Actor : NetworkBehaviour
         }
     }
 
+    public void InitWeapon()
+    {
+        if (GameMode.isReady == false)
+            return;
+        if (isChoose == true)
+            return;
+        curWeapon = (eWeapon)ChooseWeapon.tempWeaponID;
+        switch (curWeapon)
+        {
+            case eWeapon.Splattershot:
+                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Splattershot"),model.weapon.position,Quaternion.Euler(0,180,0),model.weapon);
+                break;
+            case eWeapon.Slosher:
+                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Slosher"), model.weapon.position, Quaternion.Euler(0, 180, 0), model.weapon);
+                break;
+            case eWeapon.Charger:
+                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Charger"), model.weapon.position, Quaternion.Euler(0, 180, 0), model.weapon);
+                break;
+            case eWeapon.Roller:
+                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Roller"), new Vector3(model.weapon.position.x, model.weapon.position.y-0.3f, model.weapon.position.z+0.5f), Quaternion.Euler(-45, 180, 90), model.weapon);
+                break;
+            default:
+                break;
+        }
+        isChoose = true;
+    }
     public void CheckMapColor()
     {
         var posX = Mathf.FloorToInt(transform.position.x);
@@ -600,14 +639,28 @@ public class Actor : NetworkBehaviour
         {
             return;
         }
-        camera.ApplyRecoil(60, 0.2f);
-        data.shootTimer = 0;
-        data.ink -= data.shootCost;
-        GameObject shoot;
 
-        shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
-        shoot.gameObject.SetActive(true);
-        Destroy(shoot.gameObject, 3);
+        switch (curWeapon)
+        {
+            case eWeapon.Splattershot:
+                camera.ApplyRecoil(60, 0.2f);
+                data.shootTimer = 0;
+                data.ink -= data.shootCost;
+                GameObject shoot;
+
+                shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
+                shoot.gameObject.SetActive(true);
+                Destroy(shoot.gameObject, 3);
+                break;
+            case eWeapon.Slosher:
+                break;
+            case eWeapon.Charger:
+                break;
+            case eWeapon.Roller:
+                break;
+            default:
+                break;
+        }
     }
     [Command]
     public void CmdShoot()
@@ -621,14 +674,28 @@ public class Actor : NetworkBehaviour
         {
             return;
         }
-        camera.ApplyRecoil(60, 0.2f);
-        data.shootTimer = 0;
-        data.ink -= data.shootCost;
-        GameObject shoot;
 
-        shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
-        shoot.gameObject.SetActive(true);
-        Destroy(shoot.gameObject, 3);
+        switch (curWeapon)
+        {
+            case eWeapon.Splattershot:
+                camera.ApplyRecoil(60, 0.2f);
+                data.shootTimer = 0;
+                data.ink -= data.shootCost;
+                GameObject shoot;
+
+                shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
+                shoot.gameObject.SetActive(true);
+                Destroy(shoot.gameObject, 3);
+                break;
+            case eWeapon.Slosher:
+                break;
+            case eWeapon.Charger:
+                break;
+            case eWeapon.Roller:
+                break;
+            default:
+                break;
+        }
     }
 
     public void TakeDamage(Actor atker,Actor target,Vector3 normal)

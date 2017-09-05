@@ -15,6 +15,8 @@ public class GameMode : NetworkBehaviour
 
     public static bool isTeam1Win;
 
+    public static bool isReady = false;
+
     public LobbyPlayer lobby;
     Actor actor;
 
