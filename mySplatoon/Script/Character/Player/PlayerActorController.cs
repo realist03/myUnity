@@ -43,8 +43,14 @@ public class PlayerActorController : NetworkBehaviour
         if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
         {
             player.Shoot();
+            player.isCharging = true;
+            player.chargingTimer += Time.deltaTime;
         }
-
+        if(Input.GetMouseButtonUp(0))
+        {
+            player.isCharging = false;
+            player.chargingTimer = 0;
+        }
         if (Input.GetMouseButton(1))
         {
             player.TransToInkFish();
@@ -64,7 +70,7 @@ public class PlayerActorController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             player.CmdJump();
 
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
             player.CmdShoot();
 
         if (Input.GetMouseButton(1))

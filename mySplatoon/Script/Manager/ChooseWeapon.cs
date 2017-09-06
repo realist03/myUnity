@@ -9,8 +9,6 @@ public class ChooseWeapon : MonoBehaviour
 
     public ParticleSystem choosPar;
 
-    public static int tempWeaponID;
-
     void Start ()
     {
         Init();

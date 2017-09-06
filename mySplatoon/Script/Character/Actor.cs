@@ -22,7 +22,11 @@ public class Actor : NetworkBehaviour
 
     PlayerCameraFreeLook camera;
 
+    ChooseWeapon choose;
+
     public bool isMove = false;
+    public bool isCharging = false;
+    public float chargingTimer;
 
     bool isChoose = false;
 
@@ -88,6 +92,7 @@ public class Actor : NetworkBehaviour
         data = GetComponent<ActorData>();
         shake = FindObjectOfType<CameraShake>();
         camera = FindObjectOfType<PlayerCameraFreeLook>();
+        choose = FindObjectOfType<ChooseWeapon>();
     }
 
 
@@ -99,7 +104,7 @@ public class Actor : NetworkBehaviour
         Init();
         Debug.Log(netId.Value);
 
-        Util.DelayCall(0.5f, () =>
+        Util.DelayCall(1f, () =>
         {
             CmdTeamId(netId.Value, data.TeamID);
         });
@@ -122,6 +127,8 @@ public class Actor : NetworkBehaviour
         {
             return;
         }
+        if (!GameMode.isReady)
+            return;
 
         CheckMapColor();
         CheckCurJumpState();
@@ -139,7 +146,12 @@ public class Actor : NetworkBehaviour
         RegenerateHealth();
         CheckRunVFX();
 
-        InitWeapon();
+        if (isLocalPlayer && GameMode.isReady)
+        {
+            curWeapon = (eWeapon)GameMode.tempWeaponID;
+
+            CmdWeapon(netId.Value, curWeapon);
+        }
     }
 
     [Command]
@@ -155,6 +167,19 @@ public class Actor : NetworkBehaviour
         {
             data.TeamID = value;
             InitCurColor();
+        }
+    }
+    [Command]
+    public void CmdWeapon(uint rNetId,eWeapon cWeapon)
+    {
+        RpcWeapon(rNetId, cWeapon);
+    }
+    [ClientRpc]
+    public void RpcWeapon(uint rNetId, eWeapon cWeapon)
+    {
+        if (netId.Value == rNetId)
+        {
+            InitWeapon(cWeapon);
         }
     }
 
@@ -443,13 +468,12 @@ public class Actor : NetworkBehaviour
         }
     }
 
-    public void InitWeapon()
+    public void InitWeapon(eWeapon curWeapon)
     {
         if (GameMode.isReady == false)
             return;
         if (isChoose == true)
             return;
-        curWeapon = (eWeapon)ChooseWeapon.tempWeaponID;
         switch (curWeapon)
         {
             case eWeapon.Splattershot:
@@ -462,7 +486,7 @@ public class Actor : NetworkBehaviour
                 Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Charger"), model.weapon.position, Quaternion.Euler(0, 180, 0), model.weapon);
                 break;
             case eWeapon.Roller:
-                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Roller"), new Vector3(model.weapon.position.x, model.weapon.position.y-0.3f, model.weapon.position.z+0.5f), Quaternion.Euler(-45, 180, 90), model.weapon);
+                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Roller"), new Vector3(model.weapon.position.x, model.weapon.position.y-0.2f, model.weapon.position.z+1f), Quaternion.Euler(-30, 180, 90), model.weapon);
                 break;
             default:
                 break;
@@ -657,6 +681,10 @@ public class Actor : NetworkBehaviour
             case eWeapon.Charger:
                 break;
             case eWeapon.Roller:
+                if(chargingTimer >= 2)
+                {
+
+                }
                 break;
             default:
                 break;

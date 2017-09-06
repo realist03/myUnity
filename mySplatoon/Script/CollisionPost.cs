@@ -3,132 +3,204 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /**
-* The CollisionPrinter Component. Prints a projection under set conditions related to the collision of the object attached to this printer.
+* The RayCollisionPrinter Component. Given a transform, it projects a ray that starts at the transforms position and casts in the transforms forward direction. It then prints a projection under set conditions relating to that raycast.
 */
-[RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(Rigidbody))]
 public class CollisionPost : Printer
 {
     /**
-    * Defines the orientation of the projection relative to the surface of the collision. Velocity will orient the projection as if its up is the direction the collision object is moving in. Random will orient the projection as if its up is random.
-    */
-    public RotationSource rotationSource;
-
-    /**
-    * Defines the condition on which a projection is printed. Enter will print whenever a collision occurs. Delay will print the conditionTime seconds after a collision occurs. Constant will print every fixed update during a collision. Exit will print upon exiting a collision.
+    * Defines the condition on which a projection is printed. Enter will print whenever a ray-collision occurs. Delay will print the conditionTime seconds after a ray-collision occurs. Constant will print every fixed update during a ray-collision. Exit will print upon exiting a ray-collision.
     */
     public CollisionCondition condition;
     /**
     * If the collision condition is set to delay, the conditionTime determines the length of that delay.
     */
-    public float conditionTime;
+    public float conditionTime = 1;
 
     /**
-    * The layers that, when collided with, cause a print.
+    * The layers that, when hit by a ray with, cause a print.
     */
     public LayerMask layers;
 
-    private float timeElapsed;
-    private bool delayPrinted;
+    //Cast Properties
+    /**
+    * The transform that defines the collision ray. If left null will default to the attached transform. The transforms position will be used as a base for the rays starting position & it's forward direction will be used as a base for the rays direction.
+    */
+    public Transform castPoint;
+    /**
+    * The position offset is applied to the castPoint to get the starting point of the collision ray. This essentially allows you to offset the rays starting position.
+    */
+    public Vector3 positionOffset;
+    /**
+    * The rotation offset is applied to the castPoint transforms forward direction to get the direction of the collision ray. This essentially allows you to offset the rays direction.
+    */
+    public Vector3 rotationOffset;
+    /**
+    * The length of the ray thats cast.
+    */
+    public float castLength = 1;
+
+    public RotationSource rotationSource;
+    private List<ParticleCollisionEvent> collisionEvents;
+
+    public Actor actor;
+
+    Actor.eColor shellCurColor = Actor.eColor.None;
+
+    public ParticleSystem VFX;
+    public ParticleSystem VFX_l;
+    public ParticleSystem VFX_r;
+
+    public Transform VFX_L;
+    public Transform VFX_R;
 
     private void Start()
     {
-        prints[0] = Projection.<Decal>();
+        actor = GetComponentInParent<Actor>();
+
+        shellCurColor = actor.curColor;
+
+        prints[0] = actor.transform.Find("Splash 1").GetComponent<Decal>();
+        VFX = actor.transform.Find("rollerVFX").GetComponent<ParticleSystem>();
+
+        VFX_l = Instantiate(VFX, VFX_L.position, Quaternion.Euler(-30, -90, 0), VFX_L);
+        VFX_r = Instantiate(VFX, VFX_R.position,Quaternion.Euler(-30,90,0),VFX_R);
     }
-    void OnCollisionEnter(Collision collision)
+    void FixedUpdate()
     {
-        //Print on Enter or Constant
-        if (condition == CollisionCondition.Enter || condition == CollisionCondition.Constant)
+        CastCollision(Time.fixedDeltaTime);
+        if(actor.isMove)
         {
-            PrintCollision(collision);
+            VFX_l.gameObject.SetActive(true);
+            VFX_r.gameObject.SetActive(true);
         }
-
-        //Set up our collision
-        timeElapsed = 0;
-        delayPrinted = false;
-    }
-    void OnCollisionStay(Collision collision)
-    {
-        timeElapsed += Time.deltaTime;
-        PrintCollision(collision);
-
-        //Print on constant
-        if (condition == CollisionCondition.Constant)
+        else
         {
-            PrintCollision(collision);
-        }
-
-        //Print on delay if time elapsed is greater than delay and we haven't during this collision
-        if (condition == CollisionCondition.Delay && timeElapsed > conditionTime && !delayPrinted)
-        {
-            PrintCollision(collision);
-            delayPrinted = true;
-        }
-    }
-    void OnCollisionExit(Collision collision)
-    {
-        //Print on exit
-        if (condition == CollisionCondition.Exit)
-        {
-            PrintCollision(collision);
-        }
-
-        //Print on delay if we haven't during this collision
-        if (condition == CollisionCondition.Delay && !delayPrinted)
-        {
-            PrintCollision(collision);
+            VFX_l.gameObject.SetActive(false);
+            VFX_r.gameObject.SetActive(false);
         }
     }
 
-    public void PrintCollision(Collision collision)
-    {
-        Transform surface = null;
-        Vector3 position = Vector3.zero;
-        Vector3 normal = Vector3.zero;
+    #region Collision
+    CollisionData collision;
 
-        //Iterate over all contact points
-        int validContacts = 0;
-        foreach (ContactPoint contact in collision.contacts)
+    float timeElapsed;
+    bool delayPrinted;
+
+    private void CastCollision(float deltaTime)
+    {
+        Vector3 rot;
+        if (rotationSource == RotationSource.Velocity && GetComponent<Rigidbody>().velocity != Vector3.zero) rot = GetComponent<Rigidbody>().velocity.normalized;
+        else if (rotationSource == RotationSource.Random) rot = Random.insideUnitSphere.normalized;
+        else rot = Vector3.up;
+
+        //Calculate Target Position and Rotation
+        Transform origin = (castPoint != null) ? castPoint : transform;
+        Quaternion Rotation = origin.rotation * Quaternion.Euler(rotationOffset);
+        Vector3 Position = origin.position + (Rotation * positionOffset);
+
+        //Check for collision
+        RaycastHit hit;
+        Ray ray = new Ray(Position, Rotation * Vector3.forward);
+        if (Physics.Raycast(transform.position,-Vector3.up, out hit, castLength, layers.value))
         {
-            //Make sure our colliding object is within layermask
-            if (layers.value == (layers.value | 1 << contact.otherCollider.gameObject.layer))
+            //Calculate Data
+            collision = new CollisionData(hit.point, Quaternion.LookRotation(-hit.normal, rot), hit.transform, hit.collider.gameObject.layer);
+
+            //If Condition is Constant
+            if (condition == CollisionCondition.Constant)
             {
-                //We have a valid contact
-                validContacts++;
+                PrintCollision(collision);
+            }
 
-                if (validContacts == 1) surface = contact.otherCollider.transform;
-                if (validContacts == 1) position = contact.point;
-                if (validContacts == 1) normal = contact.normal;
+            //If Condition is Enter
+            if (timeElapsed == 0)
+            {
+                if (condition == CollisionCondition.Enter)
+                {
+                    PrintCollision(collision);
+                }
+            }
+
+            //Update collision time
+            timeElapsed += deltaTime;
+
+            //If Condition is Delayed and delay has passed
+            if (condition == CollisionCondition.Delay && timeElapsed >= conditionTime && !delayPrinted)
+            {
+                PrintCollision(collision);
+                delayPrinted = true;
             }
         }
-
-        if (validContacts > 0)
+        else
         {
-            //Calculate final position and surface normal (Not collision normal)
-            RaycastHit hit;
-            if (Physics.Raycast(position + (normal * 0.3f), -normal, out hit, 0.4f, layers.value))
+            //If condition is Exit || Delayed and premature
+            if (timeElapsed > 0 && (condition == CollisionCondition.Exit || (condition == CollisionCondition.Delay && timeElapsed < conditionTime)))
             {
-                position = hit.point;
-                normal = hit.normal;
-                surface = hit.collider.transform;
+                PrintCollision(collision);
+            }
 
-                //Calculate our rotation
-                Vector3 rot;
-                if (rotationSource == RotationSource.Velocity && GetComponent<Rigidbody>().velocity != Vector3.zero) rot = GetComponent<Rigidbody>().velocity.normalized;
-                else if (rotationSource == RotationSource.Random) rot = Random.insideUnitSphere.normalized;
-                else rot = Vector3.up;
+            //Set up our collision
+            timeElapsed = 0;
+            delayPrinted = false;
+        }
+    }
+    #endregion
 
-                //Print
-                Print(position, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
+    private void PrintCollision(CollisionData collision)
+    {
+        var position = collision.position;
+        var posX = Mathf.FloorToInt(position.x);
+        var posY = Mathf.FloorToInt(position.y);
+        var posZ = Mathf.FloorToInt(position.z);
+
+        Vector3 intPos = new Vector3(posX + 0.5f, position.y, posZ + 0.56f);
+
+        if (Mapping.map.ContainsKey(new Vector2(posX, posZ)))
+        {
+            if (Mapping.map[new Vector2(posX, posZ)] == shellCurColor)
+            {
             }
             else
             {
-                Debug.Log("Bounce!");
-                Debug.DrawRay(position + (normal * 0.4f), -normal, Color.red, Mathf.Infinity);
+                actor.CmdRemoveMapInfo(new Vector2(posX, posZ));
+                actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
+                Print(intPos, collision.rotation, collision.surface, collision.layer);
             }
         }
+        else
+        {
+            actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)actor.curColor);
+            Print(intPos, collision.rotation, collision.surface, collision.layer);
+        }
+
+    }
+
+    void OnDrawGizmos()
+    {
+        Transform origin = (castPoint != null) ? castPoint : transform;
+        Quaternion Rotation = origin.rotation * Quaternion.Euler(rotationOffset);
+        Vector3 Position = origin.position + (Rotation * positionOffset);
+
+        Gizmos.color = Color.black;
+        Gizmos.DrawRay(Position, Rotation * Vector3.up * 0.4f);
+
+        Gizmos.color = Color.white;
+        Gizmos.DrawRay(Position, Rotation * Vector3.forward * castLength);
     }
 }
 
-public enum pCollisionCondition { Enter, Delay, Constant, Exit }
-public enum pRotationSource { Velocity, Random }
+internal struct eCollisionData
+{
+    public Vector3 position;
+    public Quaternion rotation;
+    public Transform surface;
+    public int layer;
+
+    public eCollisionData(Vector3 Position, Quaternion Rotation, Transform Surface, int Layer)
+    {
+        position = Position;
+        rotation = Rotation;
+        surface = Surface;
+        layer = Layer;
+    }
+}

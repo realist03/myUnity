@@ -18,6 +18,8 @@ public class GameMode : NetworkBehaviour
     public static bool isReady = false;
 
     public LobbyPlayer lobby;
+
+    public static int tempWeaponID;
     Actor actor;
 
     bool isAdd = false;
