@@ -6,7 +6,6 @@ using UnityEngine.Networking;
 public class PlayerActor : Actor
 {
     PlayerCamera newCamera;
-
     bool isInkLow = false;
     bool isReInk = false;
 
@@ -69,7 +68,4 @@ public class PlayerActor : Actor
             model.InkFishModel.SetActive(false);
         }
     }
-
-
-
 }

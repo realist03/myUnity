@@ -8,7 +8,7 @@ public class GameMode : NetworkBehaviour
 {
     public static bool isGameOver = false;
 
-    public static float gameTime = 9999999999999;
+    public static float gameTime = 180;
 
     public static int Team1Points = 0;
     public static int Team2Points = 0;

@@ -18,13 +18,17 @@ public class Actor : NetworkBehaviour
 
     Rigidbody rigid;
 
+    Animator animator;
+
     CameraShake shake;
 
     PlayerCameraFreeLook camera;
+    PlayerActorController controller;
 
     ChooseWeapon choose;
 
     public bool isMove = false;
+    public bool isFire = false;
     public bool isCharging = false;
     public float chargingTimer;
 
@@ -51,7 +55,6 @@ public class Actor : NetworkBehaviour
     {
         None,
         Jump,
-        Fire,
     }
 
     public enum eInkFish
@@ -93,6 +96,8 @@ public class Actor : NetworkBehaviour
         shake = FindObjectOfType<CameraShake>();
         camera = FindObjectOfType<PlayerCameraFreeLook>();
         choose = FindObjectOfType<ChooseWeapon>();
+        animator = GetComponentInChildren<Animator>();
+        controller = GetComponentInChildren<PlayerActorController>();
     }
 
 
@@ -152,6 +157,7 @@ public class Actor : NetworkBehaviour
 
             CmdWeapon(netId.Value, curWeapon);
         }
+        CheckAnim();
     }
 
     [Command]
@@ -659,7 +665,7 @@ public class Actor : NetworkBehaviour
 
     public void Shoot()
     {
-        if(curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
+        if(curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
         {
             return;
         }
@@ -698,7 +704,7 @@ public class Actor : NetworkBehaviour
     [ClientRpc]
     public void RpcShoot()
     {
-        if (curState == eState.Fire || curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
+        if (curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
         {
             return;
         }
@@ -882,5 +888,13 @@ public class Actor : NetworkBehaviour
     public void NormalEffect()
     {
         data.moveSpeed = data.normalSpeed;
+    }
+
+    public void CheckAnim()
+    {
+        animator.SetFloat("MoveSpeed", controller.v);
+        animator.SetFloat("RightSpeed", controller.h);
+
+        animator.SetBool("Fire", isFire);
     }
 }

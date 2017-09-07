@@ -7,10 +7,10 @@ public class PlayerActorController : NetworkBehaviour
 {
     PlayerActor player;
 
-    float h;
-    float v;
-    float x;
-    float y;
+    public float h;
+    public float v;
+    public float x;
+    public float y;
 
 	void Start ()
     {
@@ -40,17 +40,27 @@ public class PlayerActorController : NetworkBehaviour
             player.Jump();
         }
 
-        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
-        {
-            player.Shoot();
-            player.isCharging = true;
-            player.chargingTimer += Time.deltaTime;
-        }
-        if(Input.GetMouseButtonUp(0))
-        {
-            player.isCharging = false;
-            player.chargingTimer = 0;
-        }
+        //if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        //{
+        //    player.Shoot();
+
+        //    player.curState = Actor.eState.Fire;
+        //    if(player.curWeapon == Actor.eWeapon.Charger)
+        //    {
+        //        player.isCharging = true;
+        //        player.chargingTimer += Time.deltaTime;
+        //    }
+        //}
+        //if(Input.GetMouseButtonUp(0))
+        //{
+        //    player.curState = Actor.eState.None;
+
+        //    if (player.curWeapon == Actor.eWeapon.Charger)
+        //    {
+        //        player.isCharging = false;
+        //        player.chargingTimer = 0;
+        //    }
+        //}
         if (Input.GetMouseButton(1))
         {
             player.TransToInkFish();
@@ -70,8 +80,32 @@ public class PlayerActorController : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
             player.CmdJump();
 
-        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
+        if (Input.GetMouseButtonDown(0))
+        {
             player.CmdShoot();
+            player.isFire = true;
+        }
+        if(Input.GetMouseButton(0))
+        {
+            player.CmdShoot();
+            player.isFire = true;
+
+            if (player.curWeapon == Actor.eWeapon.Charger)
+            {
+                player.isCharging = true;
+                player.chargingTimer += Time.deltaTime;
+            }
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            player.isFire = false;
+
+            if (player.curWeapon == Actor.eWeapon.Charger)
+            {
+                player.isCharging = false;
+                player.chargingTimer = 0;
+            }
+        }
 
         if (Input.GetMouseButton(1))
         {
