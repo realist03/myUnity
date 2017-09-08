@@ -7,9 +7,13 @@ public class PlayerActorController : NetworkBehaviour
 {
     PlayerActor player;
 
+    [SyncVar]
     public float h;
+    [SyncVar]
     public float v;
+    [SyncVar]
     public float x;
+    [SyncVar]
     public float y;
 
 	void Start ()
@@ -40,54 +44,8 @@ public class PlayerActorController : NetworkBehaviour
             player.Jump();
         }
 
-        //if (Input.GetMouseButton(0) && !Input.GetMouseButton(1))
-        //{
-        //    player.Shoot();
-
-        //    player.curState = Actor.eState.Fire;
-        //    if(player.curWeapon == Actor.eWeapon.Charger)
-        //    {
-        //        player.isCharging = true;
-        //        player.chargingTimer += Time.deltaTime;
-        //    }
-        //}
-        //if(Input.GetMouseButtonUp(0))
-        //{
-        //    player.curState = Actor.eState.None;
-
-        //    if (player.curWeapon == Actor.eWeapon.Charger)
-        //    {
-        //        player.isCharging = false;
-        //        player.chargingTimer = 0;
-        //    }
-        //}
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0))
         {
-            player.TransToInkFish();
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            player.TransToHuman();
-        }
-
-
-    }
-
-    private void FixedUpdate()
-    {
-        if (!isLocalPlayer)
-            return;
-        if (Input.GetKeyDown(KeyCode.Space))
-            player.CmdJump();
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            player.CmdShoot();
-            player.isFire = true;
-        }
-        if(Input.GetMouseButton(0))
-        {
-            player.CmdShoot();
             player.isFire = true;
 
             if (player.curWeapon == Actor.eWeapon.Charger)
@@ -107,6 +65,21 @@ public class PlayerActorController : NetworkBehaviour
             }
         }
 
+    }
+
+    private void FixedUpdate()
+    {
+        if (!isLocalPlayer)
+            return;
+        if (player.data.isDie)
+            return;
+        if (GameMode.isReady == false)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            player.CmdJump();
+
+
         if (Input.GetMouseButton(1))
         {
             player.CmdT2Fish();
@@ -118,5 +91,6 @@ public class PlayerActorController : NetworkBehaviour
 
         player.Move(v, h);
         player.Rotate(y);
+        player.RotateWeapon(x);
     }
 }

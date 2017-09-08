@@ -7,9 +7,8 @@ using Prototype.NetworkLobby;
 public class GameMode : NetworkBehaviour
 {
     public static bool isGameOver = false;
-
     public static float gameTime = 180;
-
+    public float setGameTime;
     public static int Team1Points = 0;
     public static int Team2Points = 0;
 
@@ -39,6 +38,7 @@ public class GameMode : NetworkBehaviour
         lobby = FindObjectOfType<LobbyPlayer>();
 
         actor = FindObjectOfType<Actor>();
+        gameTime = setGameTime;
     }
 
     void Start()

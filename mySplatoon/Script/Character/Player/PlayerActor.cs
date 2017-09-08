@@ -6,8 +6,6 @@ using UnityEngine.Networking;
 public class PlayerActor : Actor
 {
     PlayerCamera newCamera;
-    bool isInkLow = false;
-    bool isReInk = false;
 
     protected override void Init()
     {
@@ -19,15 +17,6 @@ public class PlayerActor : Actor
         }
     }
 	
-    public void TransToInkFish()
-    {
-        if(curFish == eInkFish.Human)
-        {
-            curFish = eInkFish.InkFish;
-            model.HumanModel.SetActive(false);
-            model.InkFishModel.SetActive(true);
-        }
-    }
     [Command]
     public void CmdT2Fish()
     {
@@ -39,20 +28,13 @@ public class PlayerActor : Actor
         if (curFish == eInkFish.Human)
         {
             curFish = eInkFish.InkFish;
-            model.HumanModel.SetActive(false);
-            model.InkFishModel.SetActive(true);
+            AddTransFX();
+            model.humanModel.SetActive(false);
+            model.inkFishModel.SetActive(true);
+            animator.SetBool("Trans",true);
         }
     }
 
-    public void TransToHuman()
-    {
-        if (curFish == eInkFish.InkFish)
-        {
-            curFish = eInkFish.Human;
-            model.HumanModel.SetActive(true);
-            model.InkFishModel.SetActive(false);
-        }
-    }
     [Command]
     public void CmdT2Human()
     {
@@ -64,8 +46,10 @@ public class PlayerActor : Actor
         if (curFish == eInkFish.InkFish)
         {
             curFish = eInkFish.Human;
-            model.HumanModel.SetActive(true);
-            model.InkFishModel.SetActive(false);
+            AddTransFX();
+            model.humanModel.SetActive(true);
+            model.inkFishModel.SetActive(false);
+            animator.SetBool("Trans", false);
         }
     }
 }

@@ -6,8 +6,9 @@ public class ActorModel : MonoBehaviour
 {
     public Transform muzzle;
     public Transform weapon;
-    public GameObject HumanModel;
-    public GameObject InkFishModel;
+    public GameObject humanModel;
+    public GameObject clothing;
+    public GameObject inkFishModel;
 
     public GameObject punch;
 
@@ -16,6 +17,7 @@ public class ActorModel : MonoBehaviour
     public ParticleSystem runVFX;
     public ParticleSystem underAtk;
     public ParticleSystem floorPost;
+    public ParticleSystem transFX;
 
 
     public Color One_Purple;

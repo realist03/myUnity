@@ -89,7 +89,7 @@ public class DecalsPost : Printer
                         if (shellCurColor != get.curColor)
                         {
                             actor.AddFloorPost(position);
-                            actor.AddPunchEffect(position);
+                            //actor.AddPunchEffect(position);
                             get.TakeDamage(actor,get, normal);
                             Debug.Log("被打中");
                         }

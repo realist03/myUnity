@@ -7,10 +7,8 @@ using UnityEngine.UI;
 
 public class Actor : NetworkBehaviour
 {
-    [HideInInspector]
-    public ActorData data;
-    [HideInInspector]
-    public ActorModel model;
+    [HideInInspector] public ActorData data;
+    [HideInInspector] public ActorModel model;
 
     public Vector3 spawn;
 
@@ -18,7 +16,8 @@ public class Actor : NetworkBehaviour
 
     Rigidbody rigid;
 
-    Animator animator;
+    [HideInInspector] public Animator animator;
+    AnimationClip animClip;
 
     CameraShake shake;
 
@@ -28,11 +27,14 @@ public class Actor : NetworkBehaviour
     ChooseWeapon choose;
 
     public bool isMove = false;
+    [SyncVar]
     public bool isFire = false;
     public bool isCharging = false;
     public float chargingTimer;
 
     bool isChoose = false;
+
+    AnimationEvent dyingE = new AnimationEvent();
 
     public enum eColor
     {
@@ -98,6 +100,7 @@ public class Actor : NetworkBehaviour
         choose = FindObjectOfType<ChooseWeapon>();
         animator = GetComponentInChildren<Animator>();
         controller = GetComponentInChildren<PlayerActorController>();
+        animClip = GetComponent<AnimationClip>();
     }
 
 
@@ -108,11 +111,10 @@ public class Actor : NetworkBehaviour
         gameObject.name = "Player" + netId.Value;
         Init();
         Debug.Log(netId.Value);
-
-        Util.DelayCall(1f, () =>
-        {
-            CmdTeamId(netId.Value, data.TeamID);
-        });
+        AddEvent(2, "Die");
+        //Util.DelayCall(2f, () =>
+        //{
+        //});
     }
 
     protected virtual void Init()
@@ -124,6 +126,14 @@ public class Actor : NetworkBehaviour
     }
     protected virtual void Update()
     {
+        if (isLocalPlayer)
+        {
+            CmdTeamId(netId.Value, data.TeamID);
+            CheckAnim();
+            if (isFire)
+                CmdShoot();
+        }
+
         Debug.Log(netId.Value);
         if (GameMode.isGameOver == true)
             return;
@@ -139,10 +149,6 @@ public class Actor : NetworkBehaviour
         CheckCurJumpState();
         data.shootTimer += Time.deltaTime;
 
-        //if (isLocalPlayer)
-        //{
-        //    CmdTeamId(netId.Value, data.TeamID);
-        //}
 
         CheckIsInkLow();
         CheckIsReInk();
@@ -150,14 +156,13 @@ public class Actor : NetworkBehaviour
         RegenerateInk();
         RegenerateHealth();
         CheckRunVFX();
-
+        CheckIsDie();
         if (isLocalPlayer && GameMode.isReady)
         {
             curWeapon = (eWeapon)GameMode.tempWeaponID;
 
             CmdWeapon(netId.Value, curWeapon);
         }
-        CheckAnim();
     }
 
     [Command]
@@ -242,6 +247,8 @@ public class Actor : NetworkBehaviour
 
     public void SetCurColor()
     {
+        var InkFish =  model.inkFishModel.GetComponentInChildren<Renderer>();
+        var clothing = model.clothing.GetComponentsInChildren<Renderer>();
         switch (curColor)
         {
             case eColor.None:
@@ -272,6 +279,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.One_Purple;
 
                 model.inkBag.sharedMaterial = model.m_One_Purple;
+
+                InkFish.sharedMaterials[0].color = model.One_Purple;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.One_Purple;
+                }
                 break;
             case eColor.One_WarmYellow:
                 var ps2 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -300,6 +314,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.One_WarmYellow;
 
                 model.inkBag.sharedMaterial = model.m_One_WarmYellow;
+
+                InkFish.sharedMaterials[0].color = model.One_WarmYellow;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.One_WarmYellow;
+                }
                 break;
             case eColor.Two_LightBlue:
                 var ps3 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -328,6 +349,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Two_LightBlue;
 
                 model.inkBag.sharedMaterial = model.m_Two_LightBlue;
+
+                InkFish.sharedMaterials[0].color = model.Two_LightBlue;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.Two_LightBlue;
+                }
                 break;
             case eColor.Two_ColdYellow:
                 var ps4 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -356,6 +384,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Two_ColdYellow;
 
                 model.inkBag.sharedMaterial = model.m_Two_ColdYellow;
+
+                InkFish.sharedMaterials[0].color = model.Two_ColdYellow;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.Two_ColdYellow;
+                }
                 break;
             case eColor.Three_Green_Blue:
                 var ps5 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -384,6 +419,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Three_Green_Blue;
 
                 model.inkBag.sharedMaterial = model.m_Three_Green_Blue;
+
+                InkFish.sharedMaterials[0].color = model.Three_Green_Blue;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.Three_Green_Blue;
+                }
                 break;
             case eColor.Three_Orange:
                 var ps6 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -412,6 +454,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Three_Orange;
 
                 model.inkBag.sharedMaterial = model.m_Three_Orange;
+
+                InkFish.sharedMaterials[0].color = model.Three_Orange;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.Three_Orange;
+                }
                 break;
             case eColor.Four_Green_Yellow:
                 var ps7 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -440,6 +489,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Four_Green_Yellow;
 
                 model.inkBag.sharedMaterial = model.m_Four_Green_Yellow;
+
+                InkFish.sharedMaterials[0].color = model.Four_Green_Yellow;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.Four_Green_Yellow;
+                }
                 break;
             case eColor.Four_Red_Purple:
                 var ps8 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -468,6 +524,13 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Four_Red_Purple;
 
                 model.inkBag.sharedMaterial = model.m_Four_Red_Purple;
+
+                InkFish.sharedMaterials[0].color = model.Four_Red_Purple;
+
+                for (int i = 0; i < clothing.Length; i++)
+                {
+                    clothing[i].sharedMaterials[0].color = model.Four_Red_Purple;
+                }
                 break;
             default:
                 break;
@@ -544,11 +607,16 @@ public class Actor : NetworkBehaviour
             data.moveSpeed = data.normalSpeed;
             data.jumpHeight = data.normalHeight; ;
         }
+
+        if (curFish == eInkFish.InkFish && curSame != eSame.Same)
+        {
+            data.moveSpeed = data.difSpeed;
+        }
     }
 
     public void CheckCurJumpState()
     {
-        if (Physics.Raycast(transform.position, -transform.up, 1))
+        if (Physics.Raycast(transform.position, -transform.up, 0.2f))
         {
             if(curState == eState.Jump)
             {
@@ -564,11 +632,9 @@ public class Actor : NetworkBehaviour
 
     public void CheckIsDie()
     {
-        if (!data.isDie && data.health <= 0)
+        if (data.isDie == false && data.health <= 0)
         {
             data.isDie = true;
-
-            Die();
         }
     }
 
@@ -620,18 +686,14 @@ public class Actor : NetworkBehaviour
         var Angles = -v * data.turnSpeed * Time.deltaTime;
         data.transform.Rotate(0, Angles, 0);
     }
-    [Command]
-    public void CmdRotate(float v)
-    {
-        RpcRotate(v);
-    }
-    [ClientRpc]
-    public void RpcRotate(float v)
-    {
-        var Angles = -v * data.turnSpeed * Time.deltaTime;
-        data.transform.Rotate(0, Angles, 0);
-    }
 
+    public void RotateWeapon(float v)
+    {
+        Debug.Log("v:" + v);
+        var Angles = -v * 2000 * Time.deltaTime;
+        var muzzle = transform.Find("Muzzle");
+        muzzle.Rotate(0, 0, Angles);
+    }
     public void Jump()
     {
         if(curState == eState.Jump)
@@ -896,5 +958,30 @@ public class Actor : NetworkBehaviour
         animator.SetFloat("RightSpeed", controller.h);
 
         animator.SetBool("Fire", isFire);
+        animator.SetBool("Die", data.isDie);
+
+        if (curState == eState.Jump)
+        {
+            animator.SetBool("Jump", true);
+        }
+        else
+            animator.SetBool("Jump", false);
+
+    }
+
+    public void AddEvent(float EventTime, string funcname)
+    {
+        AnimationEvent animEvent = new AnimationEvent();
+        animEvent.time = EventTime;
+        animEvent.functionName = funcname;
+        animClip.AddEvent(animEvent);
+    }
+
+    public void AddTransFX()
+    {
+        ParticleSystem trans;
+        trans = Instantiate(model.transFX,transform);
+        trans.gameObject.SetActive(true);
+        Destroy(trans.gameObject, 2);
     }
 }
