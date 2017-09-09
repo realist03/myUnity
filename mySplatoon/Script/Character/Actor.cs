@@ -247,8 +247,6 @@ public class Actor : NetworkBehaviour
 
     public void SetCurColor()
     {
-        var InkFish =  model.inkFishModel.GetComponentInChildren<Renderer>();
-        var clothing = model.clothing.GetComponentsInChildren<Renderer>();
         switch (curColor)
         {
             case eColor.None:
@@ -280,11 +278,15 @@ public class Actor : NetworkBehaviour
 
                 model.inkBag.sharedMaterial = model.m_One_Purple;
 
-                InkFish.sharedMaterials[0].color = model.One_Purple;
 
-                for (int i = 0; i < clothing.Length; i++)
+                var InkFish1 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing1 = model.clothing.GetComponentsInChildren<Renderer>();
+
+                InkFish1.materials[0].color = model.One_Purple;
+
+                for (int i = 0; i < clothing1.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.One_Purple;
+                    clothing1[i].materials[0].color = model.One_Purple;
                 }
                 break;
             case eColor.One_WarmYellow:
@@ -314,12 +316,14 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.One_WarmYellow;
 
                 model.inkBag.sharedMaterial = model.m_One_WarmYellow;
+                var InkFish2 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing2 = model.clothing.GetComponentsInChildren<Renderer>();
 
-                InkFish.sharedMaterials[0].color = model.One_WarmYellow;
+                InkFish2.materials[0].color = model.One_WarmYellow;
 
-                for (int i = 0; i < clothing.Length; i++)
+                for (int i = 0; i < clothing2.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.One_WarmYellow;
+                    clothing2[i].materials[0].color = model.One_WarmYellow;
                 }
                 break;
             case eColor.Two_LightBlue:
@@ -349,12 +353,14 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Two_LightBlue;
 
                 model.inkBag.sharedMaterial = model.m_Two_LightBlue;
+                var InkFish3 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing3 = model.clothing.GetComponentsInChildren<Renderer>();
 
-                InkFish.sharedMaterials[0].color = model.Two_LightBlue;
+                InkFish3.materials[0].color = model.Two_LightBlue;
 
-                for (int i = 0; i < clothing.Length; i++)
+                for (int i = 0; i < clothing3.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.Two_LightBlue;
+                    clothing3[i].materials[0].color = model.Two_LightBlue;
                 }
                 break;
             case eColor.Two_ColdYellow:
@@ -384,12 +390,14 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Two_ColdYellow;
 
                 model.inkBag.sharedMaterial = model.m_Two_ColdYellow;
+                var InkFish4 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing4 = model.clothing.GetComponentsInChildren<Renderer>();
 
-                InkFish.sharedMaterials[0].color = model.Two_ColdYellow;
+                InkFish4.materials[0].color = model.Two_ColdYellow;
 
-                for (int i = 0; i < clothing.Length; i++)
+                for (int i = 0; i < clothing4.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.Two_ColdYellow;
+                    clothing4[i].materials[0].color = model.Two_ColdYellow;
                 }
                 break;
             case eColor.Three_Green_Blue:
@@ -419,12 +427,14 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Three_Green_Blue;
 
                 model.inkBag.sharedMaterial = model.m_Three_Green_Blue;
+                var InkFish5 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing5 = model.clothing.GetComponentsInChildren<Renderer>();
 
-                InkFish.sharedMaterials[0].color = model.Three_Green_Blue;
+                InkFish5.materials[0].color = model.Three_Green_Blue;
 
-                for (int i = 0; i < clothing.Length; i++)
+                for (int i = 0; i < clothing5.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.Three_Green_Blue;
+                    clothing5[i].materials[0].color = model.Three_Green_Blue;
                 }
                 break;
             case eColor.Three_Orange:
@@ -454,12 +464,14 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Three_Orange;
 
                 model.inkBag.sharedMaterial = model.m_Three_Orange;
+                var InkFish6 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing6 = model.clothing.GetComponentsInChildren<Renderer>();
 
-                InkFish.sharedMaterials[0].color = model.Three_Orange;
+                InkFish6.materials[0].color = model.Three_Orange;
 
-                for (int i = 0; i < clothing.Length; i++)
+                for (int i = 0; i < clothing6.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.Three_Orange;
+                    clothing6[i].materials[0].color = model.Three_Orange;
                 }
                 break;
             case eColor.Four_Green_Yellow:
@@ -489,12 +501,14 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Four_Green_Yellow;
 
                 model.inkBag.sharedMaterial = model.m_Four_Green_Yellow;
+                var InkFish7 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing7 = model.clothing.GetComponentsInChildren<Renderer>();
 
-                InkFish.sharedMaterials[0].color = model.Four_Green_Yellow;
+                InkFish7.materials[0].color = model.Four_Green_Yellow;
 
-                for (int i = 0; i < clothing.Length; i++)
+                for (int i = 0; i < clothing7.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.Four_Green_Yellow;
+                    clothing7[i].materials[0].color = model.Four_Green_Yellow;
                 }
                 break;
             case eColor.Four_Red_Purple:
@@ -524,12 +538,14 @@ public class Actor : NetworkBehaviour
                 fillImage.color = model.Four_Red_Purple;
 
                 model.inkBag.sharedMaterial = model.m_Four_Red_Purple;
+                var InkFish8 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var clothing8 = model.clothing.GetComponentsInChildren<Renderer>();
 
-                InkFish.sharedMaterials[0].color = model.Four_Red_Purple;
+                InkFish8.materials[0].color = model.Four_Red_Purple;
 
-                for (int i = 0; i < clothing.Length; i++)
+                for (int i = 0; i < clothing8.Length; i++)
                 {
-                    clothing[i].sharedMaterials[0].color = model.Four_Red_Purple;
+                    clothing8[i].materials[0].color = model.Four_Red_Purple;
                 }
                 break;
             default:
@@ -796,7 +812,7 @@ public class Actor : NetworkBehaviour
 
     public void TakeDamage(Actor atker,Actor target,Vector3 normal)
     {
-
+        animator.SetTrigger("Hit");
         target.data.health -= atker.data.playerShellDamage;
         ParticleSystem atkVFX;
         atkVFX = Instantiate(model.underAtk, target.transform.position,Quaternion.Euler(-normal));
@@ -863,13 +879,17 @@ public class Actor : NetworkBehaviour
     public void Die()
     {
 
-        renders = gameObject.GetComponentsInChildren<Renderer>();
+        renders = gameObject.GetComponentsInChildren<Renderer>(true);
 
         foreach (var render in renders)
         {
             render.gameObject.SetActive(false);
         }
 
+        ParticleSystem die;
+        die = Instantiate(model.dieFX, transform);
+        die.gameObject.SetActive(true);
+        Destroy(die.gameObject, 2);
         Util.DelayCall(7, () => 
         {
             Respawn();

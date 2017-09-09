@@ -64,8 +64,8 @@ public class CameraShake : MonoBehaviour
 
     public void AtkerShake()
     {
-        shake = 0.05f;
-        shakeAmount = 0.05f;
-        decreaseFactor = 0.05f;
+        shake = 0.02f;
+        shakeAmount = 0.02f;
+        decreaseFactor = 0.02f;
     }
 }

@@ -25,6 +25,8 @@ public class PlayerActorController : NetworkBehaviour
     {
         if (!isLocalPlayer)
             return;
+        if (GameMode.isReady == false)
+            return;
 
         h = Input.GetAxis("Horizontal");
         v = Input.GetAxis("Vertical");
@@ -54,7 +56,7 @@ public class PlayerActorController : NetworkBehaviour
                 player.chargingTimer += Time.deltaTime;
             }
         }
-        if (Input.GetMouseButtonUp(0))
+        if (!Input.GetMouseButton(0))
         {
             player.isFire = false;
 
@@ -84,7 +86,7 @@ public class PlayerActorController : NetworkBehaviour
         {
             player.CmdT2Fish();
         }
-        if (Input.GetMouseButtonUp(1))
+        if (!Input.GetMouseButton(1))
         {
             player.CmdT2Human();
         }

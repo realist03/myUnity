@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
 /**
 * The CollisionPrinter Component. Prints a projection under set conditions related to the collision of the object attached to this printer.
 */
@@ -89,7 +88,7 @@ public class DecalsPost : Printer
                         if (shellCurColor != get.curColor)
                         {
                             actor.AddFloorPost(position);
-                            //actor.AddPunchEffect(position);
+                            actor.AddPunchEffect(position);
                             get.TakeDamage(actor,get, normal);
                             Debug.Log("被打中");
                         }

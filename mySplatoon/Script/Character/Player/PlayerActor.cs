@@ -50,6 +50,7 @@ public class PlayerActor : Actor
             model.humanModel.SetActive(true);
             model.inkFishModel.SetActive(false);
             animator.SetBool("Trans", false);
+            animator.SetTrigger("TransB");
         }
     }
 }

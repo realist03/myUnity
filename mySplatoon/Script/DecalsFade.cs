@@ -5,13 +5,14 @@ using DG.Tweening;
 
 public class DecalsFade : MonoBehaviour
 {
-
+    
 	void Start ()
     {
-        transform.localScale = Vector3.one* 0.5f;
+        var range = UnityEngine.Random.Range(2.7f, 3.1f);
 
-        transform.DOScale(Vector3.one,0.3f);
+        var decal = GetComponent<Decal>();
+        decal.transform.localScale = Vector3.one * 1f;
+
+        decal.transform.DOScale(Vector3.one * range, 0.2f);
     }
-	
-	 
 }
