@@ -17,6 +17,7 @@ public class DecalsPost : Printer
     private float maxparticleCollisionSize;
     private List<ParticleCollisionEvent> collisionEvents;
 
+    public AudioSource post;
     public Actor actor;
 
     Actor.eColor shellCurColor = Actor.eColor.None;
@@ -118,12 +119,16 @@ public class DecalsPost : Printer
                         {
                             actor.CmdRemoveMapInfo(new Vector2(posX, posZ));
                             actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
+                            if(!post.isPlaying)
+                                post.Play();
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
                     }
                     else
                     {
                         actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)actor.curColor);
+                        if (!post.isPlaying)
+                            post.Play();
                         Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                     }
                 }

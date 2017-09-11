@@ -14,6 +14,8 @@ public class Actor : NetworkBehaviour
 
     public Image fillImage;
 
+    public AudioSource shoot;
+
     Rigidbody rigid;
 
     [HideInInspector] public Animator animator;
@@ -786,6 +788,8 @@ public class Actor : NetworkBehaviour
         {
             return;
         }
+        if(!shoot.isPlaying)
+        shoot.Play();
 
         switch (curWeapon)
         {
