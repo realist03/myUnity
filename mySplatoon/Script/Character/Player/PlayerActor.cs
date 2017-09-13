@@ -17,35 +17,59 @@ public class PlayerActor : Actor
         }
     }
 	
-    [Command]
-    public void CmdT2Fish()
+    public void TransToFish()
     {
-        RpcT2Fish();
-    }
-    [ClientRpc]
-    public void RpcT2Fish()
-    {
-        if (curFish == eInkFish.Human)
+        if (state.curFish == eInkFish.Human)
         {
-            curFish = eInkFish.InkFish;
+            state.curFish = eInkFish.InkFish;
             AddTransFX();
             model.humanModel.SetActive(false);
             model.inkFishModel.SetActive(true);
-            animator.SetBool("Trans",true);
+            animator.SetBool("Trans", true);
+        }
+    }
+    [Command]
+    public void Cmd2Fish()
+    {
+        Rpc2Fish();
+    }
+    [ClientRpc]
+    public void Rpc2Fish()
+    {
+        if (state.curFish == eInkFish.Human)
+        {
+            state.curFish = eInkFish.InkFish;
+            AddTransFX();
+            model.humanModel.SetActive(false);
+            model.inkFishModel.SetActive(true);
+            animator.SetBool("Trans", true);
         }
     }
 
-    [Command]
-    public void CmdT2Human()
+
+    public void TransToHuman()
     {
-        RpcT2Human();
+        if (state.curFish == eInkFish.InkFish)
+        {
+            state.curFish = eInkFish.Human;
+            AddTransFX();
+            model.humanModel.SetActive(true);
+            model.inkFishModel.SetActive(false);
+            animator.SetBool("Trans", false);
+            animator.SetTrigger("TransB");
+        }
+    }
+    [Command]
+    public void Cmd2Human()
+    {
+        Rpc2Huam();
     }
     [ClientRpc]
-    public void RpcT2Human()
+    public void Rpc2Huam()
     {
-        if (curFish == eInkFish.InkFish)
+        if (state.curFish == eInkFish.InkFish)
         {
-            curFish = eInkFish.Human;
+            state.curFish = eInkFish.Human;
             AddTransFX();
             model.humanModel.SetActive(true);
             model.inkFishModel.SetActive(false);

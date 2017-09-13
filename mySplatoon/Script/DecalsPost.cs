@@ -30,7 +30,7 @@ public class DecalsPost : Printer
 
         actor = GetComponentInParent<Actor>();
 
-        shellCurColor = actor.curColor;
+        shellCurColor = actor.state.curColor;
 
         if (Application.isPlaying)
         {
@@ -54,6 +54,7 @@ public class DecalsPost : Printer
 
     void OnParticleCollision(GameObject other)
     {
+
         if (Application.isPlaying)
         {
             int numCollisionEvents = partSystem.GetCollisionEvents(other, collisionEvents);
@@ -71,7 +72,7 @@ public class DecalsPost : Printer
 
                 //Calculate final position and surface normal
                 RaycastHit hit;
-                if (Physics.Raycast(position, -normal, out hit, 5, layerMask))
+                if (Physics.Raycast(position, -normal, out hit, 1, layerMask))
                 {
 
                     position = hit.point;
@@ -86,7 +87,7 @@ public class DecalsPost : Printer
                     {
                         var get = hit.collider.gameObject.GetComponentInParent<Actor>();
 
-                        if (shellCurColor != get.curColor)
+                        if (shellCurColor != get.state.curColor)
                         {
                             actor.AddFloorPost(position);
                             actor.AddPunchEffect(position);
@@ -119,17 +120,25 @@ public class DecalsPost : Printer
                         {
                             actor.CmdRemoveMapInfo(new Vector2(posX, posZ));
                             actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
-                            if(!post.isPlaying)
+                            actor.CmdAddV(intPos);
+                            if (!post.isPlaying)
                                 post.Play();
-                            Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
+                            if (Mapping.mapV != null && Mapping.mapV.Count != 0)
+                            {
+                                Print(Mapping.mapV[(Mapping.mapV.Count - 1)], Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
+                            }
                         }
                     }
                     else
                     {
-                        actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)actor.curColor);
+                        actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)actor.state.curColor);
+                        actor.CmdAddV(intPos);
                         if (!post.isPlaying)
                             post.Play();
-                        Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
+                        if (Mapping.mapV != null&& Mapping.mapV.Count!=0)
+                        {
+                            Print(Mapping.mapV[(Mapping.mapV.Count - 1)], Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
+                        }
                     }
                 }
                 i++;

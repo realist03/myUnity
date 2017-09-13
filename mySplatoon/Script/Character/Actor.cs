@@ -9,34 +9,27 @@ public class Actor : NetworkBehaviour
 {
     [HideInInspector] public ActorData data;
     [HideInInspector] public ActorModel model;
+    [HideInInspector] public Animator animator;
+    [HideInInspector] public PlayerActorController controller;
+    [HideInInspector] public ActorState state;
+    [HideInInspector] public GameObject self;
 
-    public Vector3 spawn;
+    [SerializeField] Image fillImage;
 
-    public Image fillImage;
+    [SerializeField] AudioSource shoot;
 
-    public AudioSource shoot;
+
+    Vector3 spawn;
 
     Rigidbody rigid;
-
-    [HideInInspector] public Animator animator;
-    AnimationClip animClip;
 
     CameraShake shake;
 
     PlayerCameraFreeLook camera;
-    PlayerActorController controller;
-
+    ScreenPost screenPost;
     ChooseWeapon choose;
 
-    public bool isMove = false;
-    [SyncVar]
-    public bool isFire = false;
-    public bool isCharging = false;
-    public float chargingTimer;
-
-    bool isChoose = false;
-
-    AnimationEvent dyingE = new AnimationEvent();
+    private Renderer render;
 
     public enum eColor
     {
@@ -81,42 +74,30 @@ public class Actor : NetworkBehaviour
         Charger,
         Roller,
     }
-    [SyncVar]
-    public eInkFish curFish = eInkFish.Human;
-    [SyncVar]
-    public eColor curColor = eColor.None;
-    [SyncVar]
-    public eState curState = eState.None;
-    [SyncVar]
-    public eSame curSame = eSame.None;
-    [SyncVar]
-    public eWeapon curWeapon;
+
+
 
     public void Awake()
     {
+        controller = GetComponent<PlayerActorController>();
+        data = GetComponent<ActorData>();
+        state = GetComponent<ActorState>();
         model = GetComponent<ActorModel>();
         rigid = GetComponent<Rigidbody>();
-        data = GetComponent<ActorData>();
-        shake = FindObjectOfType<CameraShake>();
-        camera = FindObjectOfType<PlayerCameraFreeLook>();
         choose = FindObjectOfType<ChooseWeapon>();
         animator = GetComponentInChildren<Animator>();
-        controller = GetComponentInChildren<PlayerActorController>();
-        animClip = GetComponent<AnimationClip>();
+        shake = FindObjectOfType<CameraShake>();
+        camera = FindObjectOfType<PlayerCameraFreeLook>();
+        screenPost = camera.GetComponentInChildren<ScreenPost>(true);
+        spawn = gameObject.transform.position;
+        data.health = data.healthMax;
+        self = gameObject;
     }
-
-
 
     public void Start()
     {
-        spawn = gameObject.transform.position;
-        gameObject.name = "Player" + netId.Value;
+        gameObject.name = "Player" + (netId.Value-1);
         Init();
-        Debug.Log(netId.Value);
-        AddEvent(2, "Die");
-        //Util.DelayCall(2f, () =>
-        //{
-        //});
     }
 
     protected virtual void Init()
@@ -124,46 +105,6 @@ public class Actor : NetworkBehaviour
         if (isLocalPlayer)
         {
             data.TeamID = BattleManager.Instance.curPlayerTeam;
-        }
-    }
-    protected virtual void Update()
-    {
-        if (isLocalPlayer)
-        {
-            CmdTeamId(netId.Value, data.TeamID);
-            CheckAnim();
-            if (isFire)
-                CmdShoot();
-        }
-
-        Debug.Log(netId.Value);
-        if (GameMode.isGameOver == true)
-            return;
-
-        if (data.isDie)
-        {
-            return;
-        }
-        if (!GameMode.isReady)
-            return;
-
-        CheckMapColor();
-        CheckCurJumpState();
-        data.shootTimer += Time.deltaTime;
-
-
-        CheckIsInkLow();
-        CheckIsReInk();
-        CheckPainted();
-        RegenerateInk();
-        RegenerateHealth();
-        CheckRunVFX();
-        CheckIsDie();
-        if (isLocalPlayer && GameMode.isReady)
-        {
-            curWeapon = (eWeapon)GameMode.tempWeaponID;
-
-            CmdWeapon(netId.Value, curWeapon);
         }
     }
 
@@ -202,54 +143,54 @@ public class Actor : NetworkBehaviour
         {
             if(data.TeamID == 0)
             {
-                curColor = eColor.One_Purple;
+                state.curColor = eColor.One_Purple;
             }
             else
             {
-                curColor = eColor.One_WarmYellow;
+                state.curColor = eColor.One_WarmYellow;
             }
         }
         else if(BattleManager.Instance.curColorPair == 2)
         {
             if (data.TeamID == 0)
             {
-                curColor = eColor.Two_LightBlue;
+                state.curColor = eColor.Two_LightBlue;
             }
             else
             {
-                curColor = eColor.Two_ColdYellow;
+                state.curColor = eColor.Two_ColdYellow;
             }
         }
         else if (BattleManager.Instance.curColorPair == 3)
         {
             if (data.TeamID == 0)
             {
-                curColor = eColor.Three_Green_Blue;
+                state.curColor = eColor.Three_Green_Blue;
             }
             else
             {
-                curColor = eColor.Three_Orange;
+                state.curColor = eColor.Three_Orange;
             }
         }
         else if (BattleManager.Instance.curColorPair == 4)
         {
             if (data.TeamID == 0)
             {
-                curColor = eColor.Four_Green_Yellow;
+                state.curColor = eColor.Four_Green_Yellow;
             }
             else
             {
-                curColor = eColor.Four_Red_Purple;
+                state.curColor = eColor.Four_Red_Purple;
             }
         }
-        Debug.Log(gameObject.name+"的颜色为"+curColor);
+        Debug.Log(gameObject.name+"的颜色为"+ state.curColor);
 
         SetCurColor();
     }
 
     public void SetCurColor()
     {
-        switch (curColor)
+        switch (state.curColor)
         {
             case eColor.None:
                 break;
@@ -557,9 +498,8 @@ public class Actor : NetworkBehaviour
 
     public void InitWeapon(eWeapon curWeapon)
     {
-        if (GameMode.isReady == false)
-            return;
-        if (isChoose == true)
+ 
+        if (state.isChoose == true)
             return;
         switch (curWeapon)
         {
@@ -573,12 +513,13 @@ public class Actor : NetworkBehaviour
                 Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Charger"), model.weapon.position, Quaternion.Euler(0, 180, 0), model.weapon);
                 break;
             case eWeapon.Roller:
-                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Roller"), new Vector3(model.weapon.position.x, model.weapon.position.y-0.2f, model.weapon.position.z+1f), Quaternion.Euler(-30, 180, 90), model.weapon);
+                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Roller"), model.humanModel.transform);
+                data.normalSpeed = 2;
                 break;
             default:
                 break;
         }
-        isChoose = true;
+        state.isChoose = true;
     }
     public void CheckMapColor()
     {
@@ -589,12 +530,11 @@ public class Actor : NetworkBehaviour
 
         if (Mapping.map.ContainsKey(new Vector2(posX, posY)))
         {
-            //Debug.Log(Mapping.map.Count);
             if (Mapping.map.TryGetValue(new Vector2(posX, posY), out mapColor))
             {
-                if (mapColor != eColor.None && mapColor != curColor)
+                if (mapColor != eColor.None && mapColor != state.curColor)
                 {
-                    curSame = eSame.Diffent;
+                    state.curSame = eSame.Diffent;
                     TakeMapDamage(10);
 
                     DifEffect();
@@ -602,20 +542,19 @@ public class Actor : NetworkBehaviour
                 else
                     NormalEffect();
 
-                if (mapColor != eColor.None && mapColor == curColor)
+                if (mapColor != eColor.None && mapColor == state.curColor)
                 {
-                    curSame = eSame.Same;
-                    //Debug.Log("same");
+                    state.curSame = eSame.Same;
                 }
             }
         }
         else
-            curSame = eSame.None;
+            state.curSame = eSame.None;
     }
 
     public void CheckPainted()
     {
-        if (curFish == eInkFish.InkFish && curSame == eSame.Same)
+        if (state.curFish == eInkFish.InkFish && state.curSame == eSame.Same)
         {
             data.moveSpeed = data.rushSpeed;
             data.jumpHeight = data.rushJumpHeight;
@@ -626,7 +565,7 @@ public class Actor : NetworkBehaviour
             data.jumpHeight = data.normalHeight; ;
         }
 
-        if (curFish == eInkFish.InkFish && curSame != eSame.Same)
+        if (state.curFish == eInkFish.InkFish && state.curSame != eSame.Same)
         {
             data.moveSpeed = data.difSpeed;
         }
@@ -636,15 +575,15 @@ public class Actor : NetworkBehaviour
     {
         if (Physics.Raycast(transform.position, -transform.up, 0.2f))
         {
-            if(curState == eState.Jump)
+            if(state.curState == eState.Jump)
             {
                 AddFloorPost(transform.position);
             }
-            curState = eState.None;
+            state.curState = eState.None;
         }
         else
         {
-            curState = eState.Jump;
+            state.curState = eState.Jump;
         }
     }
 
@@ -653,12 +592,14 @@ public class Actor : NetworkBehaviour
         if (data.isDie == false && data.health <= 0)
         {
             data.isDie = true;
+            animator.SetBool("Die", data.isDie);
+            Die();
         }
     }
 
     public void CheckIsReInk()
     {
-        if (curFish == eInkFish.InkFish && curSame == eSame.Same)
+        if (state.curFish == eInkFish.InkFish && state.curSame == eSame.Same)
         {
             data.isReInk = true;
         }
@@ -684,21 +625,6 @@ public class Actor : NetworkBehaviour
         data.transform.position += data.transform.right * h * data.moveSpeed * Time.deltaTime;
     }
 
-    [Command]
-    public void CmdMove(float v, float h)
-    {
-        RpcMove(v, h);
-    }
-    [ClientRpc]
-    public void RpcMove(float v, float h)
-    {
-        data.transform.position += data.transform.forward * v * data.moveSpeed * Time.deltaTime;
-
-        data.transform.position += data.transform.right * h * data.moveSpeed * Time.deltaTime;
-    }
-
-   
-
     public void Rotate(float v)
     {
         var Angles = -v * data.turnSpeed * Time.deltaTime;
@@ -707,32 +633,13 @@ public class Actor : NetworkBehaviour
 
     public void RotateWeapon(float v)
     {
-        Debug.Log("v:" + v);
         var Angles = -v * 2000 * Time.deltaTime;
         var muzzle = transform.Find("Muzzle");
         muzzle.Rotate(0, 0, Angles);
     }
     public void Jump()
     {
-        if(curState == eState.Jump)
-        {
-            return;
-        }
-        Vector3 velocity = rigid.velocity;
-
-        velocity.y = data.jumpHeight;
-
-        rigid.velocity = velocity;
-    }
-    [Command]
-    public void CmdJump()
-    {
-        RpcJump();
-    }
-    [ClientRpc]
-    public void RpcJump()
-    {
-        if (curState == eState.Jump)
+        if(state.curState == eState.Jump)
         {
             return;
         }
@@ -745,12 +652,12 @@ public class Actor : NetworkBehaviour
 
     public void Shoot()
     {
-        if(curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
+        if(state.curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
         {
             return;
         }
-
-        switch (curWeapon)
+        shoot.Play();
+        switch (state.curWeapon)
         {
             case eWeapon.Splattershot:
                 camera.ApplyRecoil(60, 0.2f);
@@ -767,7 +674,7 @@ public class Actor : NetworkBehaviour
             case eWeapon.Charger:
                 break;
             case eWeapon.Roller:
-                if(chargingTimer >= 2)
+                if(state.chargingTimer >= 2)
                 {
 
                 }
@@ -776,55 +683,24 @@ public class Actor : NetworkBehaviour
                 break;
         }
     }
-    [Command]
-    public void CmdShoot()
-    {
-        RpcShoot();
-    }
-    [ClientRpc]
-    public void RpcShoot()
-    {
-        if (curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
-        {
-            return;
-        }
-        if(!shoot.isPlaying)
-        shoot.Play();
-
-        switch (curWeapon)
-        {
-            case eWeapon.Splattershot:
-                camera.ApplyRecoil(60, 0.2f);
-                data.shootTimer = 0;
-                data.ink -= data.shootCost;
-                GameObject shoot;
-
-                shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
-                shoot.gameObject.SetActive(true);
-                Destroy(shoot.gameObject, 3);
-                break;
-            case eWeapon.Slosher:
-                break;
-            case eWeapon.Charger:
-                break;
-            case eWeapon.Roller:
-                break;
-            default:
-                break;
-        }
-    }
 
     public void TakeDamage(Actor atker,Actor target,Vector3 normal)
     {
+        if (data.isDie)
+            return;
         animator.SetTrigger("Hit");
         target.data.health -= atker.data.playerShellDamage;
         ParticleSystem atkVFX;
         atkVFX = Instantiate(model.underAtk, target.transform.position,Quaternion.Euler(-normal));
         atkVFX.gameObject.SetActive(true);
         Destroy(atkVFX.gameObject, 3);
-        CheckIsDie();
+
         if(isLocalPlayer)
+        {
             shake.PlayerUnderAttackShake();
+            screenPost.gameObject.SetActive(true);
+        }
+
         if (!isLocalPlayer)
             shake.AtkerShake();
     }
@@ -843,9 +719,11 @@ public class Actor : NetworkBehaviour
         atkVFX = Instantiate(model.underAtk, transform.position,Quaternion.Euler(0,1,0));
         atkVFX.gameObject.SetActive(true);
         Destroy(atkVFX.gameObject, 3);
-        CheckIsDie();
         if (isLocalPlayer)
+        {
             shake.PlayerUnderAttackShake();
+            screenPost.gameObject.SetActive(true);
+        }
         temp2 = temp;
     }
 
@@ -878,39 +756,39 @@ public class Actor : NetworkBehaviour
         Mapping.map.Remove(rPos);
     }
 
-    private Renderer[] renders;
+    [Command]
+    public void CmdAddV(Vector3 pos)
+    {
+        RpcAddV(pos);
+    }
+    [ClientRpc]
+    public void RpcAddV(Vector3 pos)
+    {
+        Mapping.mapV.Add(pos);
+    }
 
     public void Die()
     {
-
-        renders = gameObject.GetComponentsInChildren<Renderer>(true);
-
-        foreach (var render in renders)
-        {
-            render.gameObject.SetActive(false);
-        }
-
         ParticleSystem die;
         die = Instantiate(model.dieFX, transform);
         die.gameObject.SetActive(true);
-        Destroy(die.gameObject, 2);
-        Util.DelayCall(7, () => 
-        {
-            Respawn();
-        });
+        Destroy(die.gameObject, 1);
+        if (isLocalPlayer)
+            shake.DieShake();
     }
 
 
-    public void Respawn()
+    public void Respawn(GameObject player)
     {
         data.health = data.healthMax;
-        data.isDie = false;
+
+        player.gameObject.SetActive(true);
+
         gameObject.transform.position = spawn;
 
-        foreach (var render in renders)
-        {
-            render.gameObject.SetActive(true);
-        }
+        data.isDie = false;
+
+        data.spawnTimer = 0;
     }
 
     public void RegenerateInk()
@@ -928,6 +806,7 @@ public class Actor : NetworkBehaviour
             data.ink += 1f;
         }
     }
+
     public void RegenerateHealth()
     {
         if(data.health < data.healthMax)
@@ -944,7 +823,7 @@ public class Actor : NetworkBehaviour
 
     public void CheckRunVFX()
     {
-        if (isMove == true && curSame == eSame.Same && curState != eState.Jump)
+        if (state.isMove == true && state.curSame == eSame.Same && state.curState != eState.Jump)
             model.runVFX.gameObject.SetActive(true);
         else
             model.runVFX.gameObject.SetActive(false);
@@ -971,6 +850,7 @@ public class Actor : NetworkBehaviour
     {
         data.moveSpeed = data.difSpeed;
     }
+
     public void NormalEffect()
     {
         data.moveSpeed = data.normalSpeed;
@@ -978,27 +858,17 @@ public class Actor : NetworkBehaviour
 
     public void CheckAnim()
     {
+        animator.SetBool("Die", data.isDie);
         animator.SetFloat("MoveSpeed", controller.v);
         animator.SetFloat("RightSpeed", controller.h);
+        animator.SetBool("Fire", state.isFire);
 
-        animator.SetBool("Fire", isFire);
-        animator.SetBool("Die", data.isDie);
-
-        if (curState == eState.Jump)
+        if (state.curState == eState.Jump)
         {
             animator.SetBool("Jump", true);
         }
         else
             animator.SetBool("Jump", false);
-
-    }
-
-    public void AddEvent(float EventTime, string funcname)
-    {
-        AnimationEvent animEvent = new AnimationEvent();
-        animEvent.time = EventTime;
-        animEvent.functionName = funcname;
-        animClip.AddEvent(animEvent);
     }
 
     public void AddTransFX()

@@ -40,20 +40,21 @@ public class ActorModel : MonoBehaviour
 
     public Renderer inkBag;
 
+    [HideInInspector] public static Color[] colors = { new Color(0.655f, 0.000f, 1.000f, 1.000f), new Color(1.000f, 0.860f, 0.404f, 1.000f), new Color(0.000f, 0.917f, 1.000f, 1.000f), new Color(1.000f, 0.981f, 0.301f, 1.000f), new Color(0.000f, 1.000f, 0.752f, 1.000f), new Color(1.000f, 0.613f, 0.199f, 1.000f), new Color(0.448f, 1.000f, 0.000f, 1.000f), new Color(1.000f, 0.303f, 0.606f, 1.000f) };
     //void Start ()
     //{
 
     //}
 
-    //void Update ()
+    //void Update()
     //{
-    //    //Debug.Log(One_Purple);
-    //    //Debug.Log(One_WarmYellow);
-    //    //Debug.Log(Two_LightBlue);
-    //    //Debug.Log(Two_ColdYellow);
-    //    //Debug.Log(Three_Green_Blue);
-    //    //Debug.Log(Three_Orange);
-    //    //Debug.Log(Four_Green_Yellow);
-    //    //Debug.Log(Four_Red_Purple);
+    //    Debug.Log(One_Purple);
+    //    Debug.Log(One_WarmYellow);
+    //    Debug.Log(Two_LightBlue);
+    //    Debug.Log(Two_ColdYellow);
+    //    Debug.Log(Three_Green_Blue);
+    //    Debug.Log(Three_Orange);
+    //    Debug.Log(Four_Green_Yellow);
+    //    Debug.Log(Four_Red_Purple);
     //}
 }

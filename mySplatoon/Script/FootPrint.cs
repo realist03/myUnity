@@ -54,7 +54,7 @@ public class FootPrint : Printer
     {
         actor = GetComponentInParent<Actor>();
 
-        shellCurColor = actor.curColor;
+        shellCurColor = actor.state.curColor;
 
         foot = actor.GetComponentsInChildren<Decal>(true);
 

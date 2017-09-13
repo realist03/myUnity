@@ -16,16 +16,19 @@ public class PlayerActorController : NetworkBehaviour
     [SyncVar]
     public float y;
 
-	void Start ()
+    private void Awake()
     {
         player = GetComponent<PlayerActor>();
     }
-	
-	void Update ()
+
+    void Update()
     {
+        if (GameMode.isGameOver)
+            return;
         if (!isLocalPlayer)
             return;
-        if (GameMode.isReady == false)
+
+        if (player.data.isDie)
             return;
 
         h = Input.GetAxis("Horizontal");
@@ -34,43 +37,49 @@ public class PlayerActorController : NetworkBehaviour
         x = Input.GetAxis("MouseHorizontal");
         y = Input.GetAxis("MouseVertical");
 
-        if (h != 0 || v != 0)
-        {
-            player.isMove = true;
-        }
-        else
-            player.isMove = false;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             player.Jump();
         }
 
-        if (Input.GetMouseButton(0))
+ 
+        if (Input.GetMouseButtonDown(0))
         {
-            player.isFire = true;
+            player.state.isFire = true;
 
-            if (player.curWeapon == Actor.eWeapon.Charger)
-            {
-                player.isCharging = true;
-                player.chargingTimer += Time.deltaTime;
-            }
-        }
-        if (!Input.GetMouseButton(0))
-        {
-            player.isFire = false;
-
-            if (player.curWeapon == Actor.eWeapon.Charger)
-            {
-                player.isCharging = false;
-                player.chargingTimer = 0;
-            }
         }
 
+        if (Input.GetMouseButtonUp(0))
+        {
+            player.state.isFire = false;
+             
+        }
+
+        if (player.state.isFire)
+        {
+            if (player.state.curWeapon == Actor.eWeapon.Charger)
+            {
+                player.state.isCharging = true;
+                player.state.chargingTimer += Time.deltaTime;
+            }
+
+        }
+        else
+        {
+            if (player.state.curWeapon == Actor.eWeapon.Charger)
+            {
+                player.state.isCharging = false;
+                player.state.chargingTimer = 0;
+            }
+        }
     }
 
     private void FixedUpdate()
     {
+        if (GameMode.isGameOver)
+            return;
+
         if (!isLocalPlayer)
             return;
         if (player.data.isDie)
@@ -79,16 +88,16 @@ public class PlayerActorController : NetworkBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.Space))
-            player.CmdJump();
+            player.Jump();
 
 
         if (Input.GetMouseButton(1))
         {
-            player.CmdT2Fish();
+            player.Cmd2Fish();
         }
         if (!Input.GetMouseButton(1))
         {
-            player.CmdT2Human();
+            player.Cmd2Human();
         }
 
         player.Move(v, h);

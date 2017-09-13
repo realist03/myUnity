@@ -2,41 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**
-* The RayCollisionPrinter Component. Given a transform, it projects a ray that starts at the transforms position and casts in the transforms forward direction. It then prints a projection under set conditions relating to that raycast.
-*/
 public class CollisionPost : Printer
 {
-    /**
-    * Defines the condition on which a projection is printed. Enter will print whenever a ray-collision occurs. Delay will print the conditionTime seconds after a ray-collision occurs. Constant will print every fixed update during a ray-collision. Exit will print upon exiting a ray-collision.
-    */
     public CollisionCondition condition;
-    /**
-    * If the collision condition is set to delay, the conditionTime determines the length of that delay.
-    */
     public float conditionTime = 1;
-
-    /**
-    * The layers that, when hit by a ray with, cause a print.
-    */
     public LayerMask layers;
 
-    //Cast Properties
-    /**
-    * The transform that defines the collision ray. If left null will default to the attached transform. The transforms position will be used as a base for the rays starting position & it's forward direction will be used as a base for the rays direction.
-    */
     public Transform castPoint;
-    /**
-    * The position offset is applied to the castPoint to get the starting point of the collision ray. This essentially allows you to offset the rays starting position.
-    */
     public Vector3 positionOffset;
-    /**
-    * The rotation offset is applied to the castPoint transforms forward direction to get the direction of the collision ray. This essentially allows you to offset the rays direction.
-    */
     public Vector3 rotationOffset;
-    /**
-    * The length of the ray thats cast.
-    */
     public float castLength = 1;
 
     public RotationSource rotationSource;
@@ -57,7 +31,7 @@ public class CollisionPost : Printer
     {
         actor = GetComponentInParent<Actor>();
 
-        shellCurColor = actor.curColor;
+        shellCurColor = actor.state.curColor;
 
         prints[0] = actor.transform.Find("Splash 1").GetComponent<Decal>();
         VFX = actor.transform.Find("rollerVFX").GetComponent<ParticleSystem>();
@@ -68,7 +42,7 @@ public class CollisionPost : Printer
     void FixedUpdate()
     {
         CastCollision(Time.fixedDeltaTime);
-        if(actor.isMove)
+        if(actor.state.isMove)
         {
             VFX_l.gameObject.SetActive(true);
             VFX_r.gameObject.SetActive(true);
@@ -159,18 +133,22 @@ public class CollisionPost : Printer
         {
             if (Mapping.map[new Vector2(posX, posZ)] == shellCurColor)
             {
+
             }
             else
             {
                 actor.CmdRemoveMapInfo(new Vector2(posX, posZ));
                 actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
-                Print(intPos, collision.rotation, collision.surface, collision.layer);
+                actor.CmdAddV(intPos);
+                Print(Mapping.mapV[(Mapping.mapV.Count - 1)], collision.rotation, collision.surface, collision.layer);
             }
         }
         else
         {
-            actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)actor.curColor);
-            Print(intPos, collision.rotation, collision.surface, collision.layer);
+            actor.CmdRemoveMapInfo(new Vector2(posX, posZ));
+            actor.CmdSetMapInfo(new Vector2(posX, posZ), (int)shellCurColor);
+            actor.CmdAddV(intPos);
+            Print(Mapping.mapV[(Mapping.mapV.Count - 1)], collision.rotation, collision.surface, collision.layer);
         }
 
     }

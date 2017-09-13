@@ -68,4 +68,11 @@ public class CameraShake : MonoBehaviour
         shakeAmount = 0.02f;
         decreaseFactor = 0.02f;
     }
+
+    public void DieShake()
+    {
+        shake = 0.02f;
+        shakeAmount = 0.01f;
+        decreaseFactor = 0.02f;
+    }
 }
