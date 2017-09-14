@@ -40,21 +40,33 @@ public class GameModeUI : MonoBehaviour
 
                 team1Points.gameObject.SetActive(true);
                 team2Points.gameObject.SetActive(true);
-                team1Points.maxValue = GameMode.Team1Points / GameMode.totalPoints;
-                team2Points.maxValue = GameMode.Team2Points / GameMode.totalPoints;
+                team1Points.maxValue = 1;
+                team2Points.maxValue = 1;
+
+                Debug.Log("tP:" + GameMode.totalPoints);
+
+                Debug.Log("t1P:" + GameMode.Team1Points);
+                Debug.Log("t2P:" + GameMode.Team2Points);
+
+                Debug.Log("t1max:" + team1Points.maxValue);
+                Debug.Log("t2max:" + team2Points.maxValue);
 
                 Util.DelayCall(3, () =>
                 {
+
                     DOTween.To(() => team1Points.value, x => team1Points.value = x, team1Points.value, 5).OnUpdate(() =>
                     {
-                        if (team1Points.value < GameMode.Team1Points / GameMode.totalPoints)
+                        if (team1Points.value < (GameMode.Team1Points / GameMode.totalPoints))
                             team1Points.value += Time.deltaTime;
                     });
+                        Debug.Log("t1:" + team1Points.value);
+
                     DOTween.To(() => team2Points.value, x => team2Points.value = x, team2Points.value, 5).OnUpdate(() =>
                     {
-                        if (team2Points.value < GameMode.Team2Points / GameMode.totalPoints)
+                        if (team2Points.value < (GameMode.Team2Points / GameMode.totalPoints))
                             team2Points.value += Time.deltaTime;
                     });
+                        Debug.Log("t2:" + team2Points.value);
                 });
             });
 

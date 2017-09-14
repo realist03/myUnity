@@ -19,9 +19,9 @@ public class GameMode : NetworkBehaviour
     public static bool isGameOver = false;
     public static float gameTime = 180;
     public float setGameTime;
-    public static int Team1Points = 0;
-    public static int Team2Points = 0;
-    public static int totalPoints = 0;
+    public static float Team1Points = 0;
+    public static float Team2Points = 0;
+    public static float totalPoints = 0;
     public static bool isTeam1Win;
 
     public static bool isReady = false;
