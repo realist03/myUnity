@@ -15,7 +15,6 @@ public class Actor : NetworkBehaviour
     [HideInInspector] public GameObject self;
 
     [SerializeField] Image fillImage;
-
     [SerializeField] AudioSource shoot;
 
 
