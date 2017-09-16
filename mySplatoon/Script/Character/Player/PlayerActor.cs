@@ -36,7 +36,7 @@ public class PlayerActor : Actor
     [ClientRpc]
     public void Rpc2Fish()
     {
-        if (state.curFish == eInkFish.Human)
+        if (state.curFish == eInkFish.Human && state.isFire == false)
         {
             state.curFish = eInkFish.InkFish;
             AddTransFX();

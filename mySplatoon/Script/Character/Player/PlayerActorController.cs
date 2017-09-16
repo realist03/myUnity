@@ -102,6 +102,6 @@ public class PlayerActorController : NetworkBehaviour
 
         player.Move(v, h);
         player.Rotate(y);
-        player.RotateWeapon(x);
+        //player.RotateWeapon(x);
     }
 }

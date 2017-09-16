@@ -15,13 +15,13 @@ public class Actor : NetworkBehaviour
     [HideInInspector] public GameObject self;
 
     [SerializeField] Image fillImage;
-    [SerializeField] AudioSource shoot;
+    [SerializeField] AudioSource shootAudio;
 
 
     Vector3 spawn;
 
     Rigidbody rigid;
-
+    PlayerActor playerActor;
     CameraShake shake;
 
     PlayerCameraFreeLook camera;
@@ -88,6 +88,7 @@ public class Actor : NetworkBehaviour
         shake = FindObjectOfType<CameraShake>();
         camera = FindObjectOfType<PlayerCameraFreeLook>();
         screenPost = camera.GetComponentInChildren<ScreenPost>(true);
+        playerActor = GetComponent<PlayerActor>();
         spawn = gameObject.transform.position;
         data.health = data.healthMax;
         self = gameObject;
@@ -199,14 +200,15 @@ public class Actor : NetworkBehaviour
                 {
                     var  item = ps1[i].main;
                     item.startColor = model.One_Purple;
-
+                    var trail = ps1[i].trails;
+                    trail.colorOverTrail = model.One_Purple;
                     var post = ps1[i].GetComponent<DecalsPost>();
                     if (post != null)
                     {
                         var tex = post.prints[0].gameObject.GetComponent<Decal>();
                         tex.AlbedoColor = model.One_Purple;
                     }
-                    if(ps1[i].name == "ShellVFX3" || ps1[i].name == "ShellVFX3_2")
+                    if(ps1[i].name == "ShellVFX3" || ps1[i].name == "ShellVFX3_2" || ps1[i].name == "RollerShellVFX")
                     {
                         var post_m = ps1[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -237,6 +239,8 @@ public class Actor : NetworkBehaviour
                 {
                     var item = ps2[i].main;
                     item.startColor = model.One_WarmYellow;
+                    var trail = ps2[i].trails;
+                    trail.colorOverTrail = model.One_WarmYellow;
 
                     var post = ps2[i].GetComponent<DecalsPost>();
                     if (post != null)
@@ -245,7 +249,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.One_WarmYellow;
                     }
 
-                    if (ps2[i].name == "ShellVFX3" || ps2[i].name == "ShellVFX3_2")
+                    if (ps2[i].name == "ShellVFX3" || ps2[i].name == "ShellVFX3_2" || ps2[i].name == "RollerShellVFX")
                     {
                         var post_m = ps2[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -274,6 +278,8 @@ public class Actor : NetworkBehaviour
                 {
                     var item = ps3[i].main;
                     item.startColor = model.Two_LightBlue;
+                    var trail = ps3[i].trails;
+                    trail.colorOverTrail = model.Two_LightBlue;
 
                     var post = ps3[i].GetComponent<DecalsPost>();
                     if (post != null)
@@ -282,7 +288,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Two_LightBlue;
                     }
 
-                    if (ps3[i].name == "ShellVFX3" || ps3[i].name == "ShellVFX3_2")
+                    if (ps3[i].name == "ShellVFX3" || ps3[i].name == "ShellVFX3_2" || ps3[i].name == "RollerShellVFX")
                     {
                         var post_m = ps3[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -311,6 +317,8 @@ public class Actor : NetworkBehaviour
                 {
                     var item = ps4[i].main;
                     item.startColor = model.Two_ColdYellow;
+                    var trail = ps4[i].trails;
+                    trail.colorOverTrail = model.Two_ColdYellow;
 
                     var post = ps4[i].GetComponent<DecalsPost>();
                     if (post != null)
@@ -319,7 +327,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Two_ColdYellow;
                     }
 
-                    if (ps4[i].name == "ShellVFX3" || ps4[i].name == "ShellVFX3_2")
+                    if (ps4[i].name == "ShellVFX3" || ps4[i].name == "ShellVFX3_2" || ps4[i].name == "RollerShellVFX")
                     {
                         var post_m = ps4[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -348,6 +356,8 @@ public class Actor : NetworkBehaviour
                 {
                     var item = ps5[i].main;
                     item.startColor = model.Three_Green_Blue;
+                    var trail = ps5[i].trails;
+                    trail.colorOverTrail = model.Three_Green_Blue;
 
                     var post = ps5[i].GetComponent<DecalsPost>();
                     if (post != null)
@@ -356,7 +366,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Three_Green_Blue;
                     }
 
-                    if (ps5[i].name == "ShellVFX3" || ps5[i].name == "ShellVFX3_2")
+                    if (ps5[i].name == "ShellVFX3" || ps5[i].name == "ShellVFX3_2" || ps5[i].name == "RollerShellVFX")
                     {
                         var post_m = ps5[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -385,6 +395,8 @@ public class Actor : NetworkBehaviour
                 {
                     var item = ps6[i].main;
                     item.startColor = model.Three_Orange;
+                    var trail = ps6[i].trails;
+                    trail.colorOverTrail = model.Three_Orange;
 
                     var post = ps6[i].GetComponent<DecalsPost>();
                     if (post != null)
@@ -393,7 +405,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Three_Orange;
                     }
 
-                    if (ps6[i].name == "ShellVFX3" || ps6[i].name == "ShellVFX3_2")
+                    if (ps6[i].name == "ShellVFX3" || ps6[i].name == "ShellVFX3_2" || ps6[i].name == "RollerShellVFX")
                     {
                         var post_m = ps6[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -422,6 +434,8 @@ public class Actor : NetworkBehaviour
                 {
                     var item = ps7[i].main;
                     item.startColor = model.Four_Green_Yellow;
+                    var trail = ps7[i].trails;
+                    trail.colorOverTrail = model.Four_Green_Yellow;
 
                     var post = ps7[i].GetComponent<DecalsPost>();
                     if (post != null)
@@ -430,7 +444,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Four_Green_Yellow;
                     }
 
-                    if (ps7[i].name == "ShellVFX3" || ps7[i].name == "ShellVFX3_2")
+                    if (ps7[i].name == "ShellVFX3" || ps7[i].name == "ShellVFX3_2" || ps7[i].name == "RollerShellVFX")
                     {
                         var post_m = ps7[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -459,6 +473,8 @@ public class Actor : NetworkBehaviour
                 {
                     var item = ps8[i].main;
                     item.startColor = model.Four_Red_Purple;
+                    var trail = ps8[i].trails;
+                    trail.colorOverTrail = model.Four_Red_Purple;
 
                     var post = ps8[i].GetComponent<DecalsPost>();
                     if (post != null)
@@ -467,7 +483,7 @@ public class Actor : NetworkBehaviour
                         tex.AlbedoColor = model.Four_Red_Purple;
                     }
 
-                    if (ps8[i].name == "ShellVFX3" || ps8[i].name == "ShellVFX3_2")
+                    if (ps8[i].name == "ShellVFX3" || ps8[i].name == "ShellVFX3_2" || ps8[i].name == "RollerShellVFX")
                     {
                         var post_m = ps8[i].gameObject.GetComponent<Renderer>();
                         if (post_m != null)
@@ -512,7 +528,7 @@ public class Actor : NetworkBehaviour
                 Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Charger"), model.weapon.position, Quaternion.Euler(0, 180, 0), model.weapon);
                 break;
             case eWeapon.Roller:
-                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Roller"), model.humanModel.transform);
+                Instantiate(Resources.Load<GameObject>("Prefab/Weapon/Weapon-Roller"), model.weapon);
                 data.normalSpeed = 2;
                 break;
             default:
@@ -522,6 +538,8 @@ public class Actor : NetworkBehaviour
     }
     public void CheckMapColor()
     {
+        if (state.curState == eState.Jump)
+            return;
         var posX = Mathf.FloorToInt(transform.position.x);
         var posY = Mathf.FloorToInt(transform.position.z);
 
@@ -632,9 +650,8 @@ public class Actor : NetworkBehaviour
 
     public void RotateWeapon(float v)
     {
-        var Angles = -v * 2000 * Time.deltaTime;
-        var muzzle = transform.Find("Muzzle");
-        muzzle.Rotate(0, 0, Angles);
+        var Angles = v * 100 * Time.deltaTime;
+        model.muzzle.Rotate(Angles, 0, 0);
     }
     public void Jump()
     {
@@ -651,19 +668,28 @@ public class Actor : NetworkBehaviour
 
     public void Shoot()
     {
-        if(state.curFish == eInkFish.InkFish || data.shootTimer < data.shootBlank || data.ink < 6)
+        if (state.curFish == eInkFish.InkFish)
         {
-            return;
+            playerActor.Cmd2Human();
         }
-        shoot.Play();
+
         switch (state.curWeapon)
         {
             case eWeapon.Splattershot:
+                if(data.shootTimer < data.splatterBlank || data.ink < 6)
+                {
+                    return;
+                }
+
+                animator.SetBool("Fire", state.isFire);
+
+                shootAudio.Play();
+
                 camera.ApplyRecoil(60, 0.2f);
                 data.shootTimer = 0;
                 data.ink -= data.shootCost;
-                GameObject shoot;
 
+                GameObject shoot;
                 shoot = Instantiate(model.mainVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
                 shoot.gameObject.SetActive(true);
                 Destroy(shoot.gameObject, 3);
@@ -673,10 +699,24 @@ public class Actor : NetworkBehaviour
             case eWeapon.Charger:
                 break;
             case eWeapon.Roller:
-                if(state.chargingTimer >= 2)
+                if (data.shootTimer < data.rollerBlank || data.ink < 6)
                 {
-
+                    return;
                 }
+
+                animator.SetTrigger("Slash");
+
+                camera.ApplyRecoil(60, 0.2f);
+                data.shootTimer = 0;
+                data.ink -= data.rollerCost;
+                Util.DelayCall(0.5f, () => 
+                {
+                    ParticleSystem roller;
+                    roller = Instantiate(model.rollerVFX, model.muzzle.position, model.mainVFX.gameObject.transform.rotation, transform);
+                    roller.gameObject.SetActive(true);
+                    Destroy(roller.gameObject, 3);
+                });
+
                 break;
             default:
                 break;
@@ -857,17 +897,19 @@ public class Actor : NetworkBehaviour
 
     public void CheckAnim()
     {
-        animator.SetBool("Die", data.isDie);
-        animator.SetFloat("MoveSpeed", controller.v);
-        animator.SetFloat("RightSpeed", controller.h);
-        animator.SetBool("Fire", state.isFire);
-
-        if (state.curState == eState.Jump)
+        if (isLocalPlayer)
         {
-            animator.SetBool("Jump", true);
+            animator.SetBool("Die", data.isDie);
+            animator.SetFloat("MoveSpeed", controller.v);
+            animator.SetFloat("RightSpeed", controller.h);
+
+            if (state.curState == eState.Jump)
+            {
+                animator.SetBool("Jump", true);
+            }
+            else
+                animator.SetBool("Jump", false);
         }
-        else
-            animator.SetBool("Jump", false);
     }
 
     public void AddTransFX()

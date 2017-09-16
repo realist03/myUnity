@@ -19,6 +19,7 @@ public class ActorModel : MonoBehaviour
     public ParticleSystem floorPost;
     public ParticleSystem transFX;
     public ParticleSystem dieFX;
+    public ParticleSystem rollerVFX;
 
     public Color One_Purple;
     public Color One_WarmYellow;

@@ -35,8 +35,10 @@ public class ActorData : NetworkBehaviour
     public int power;
     public int powerMax;
 
-    public float shootBlank;
+    public float splatterBlank;
+    public float rollerBlank;
     public float shootCost;
+    public float rollerCost;
     public int reSpawnTime;
 
 

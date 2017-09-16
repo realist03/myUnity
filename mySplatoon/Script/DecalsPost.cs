@@ -125,7 +125,7 @@ public class DecalsPost : Printer
                                 post.Play();
                             if (Mapping.mapV != null && Mapping.mapV.Count != 0)
                             {
-                                Print(Mapping.mapV[(Mapping.mapV.Count - 1)], Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
+                                Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                             }
                         }
                     }
@@ -137,7 +137,7 @@ public class DecalsPost : Printer
                             post.Play();
                         if (Mapping.mapV != null&& Mapping.mapV.Count!=0)
                         {
-                            Print(Mapping.mapV[(Mapping.mapV.Count - 1)], Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
+                            Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
                     }
                 }
