@@ -19,6 +19,7 @@ public class DecalsPost : Printer
 
     public AudioSource post;
     public Actor actor;
+    Vector3 intPos = new Vector3(0,0,0);
 
     Actor.eColor shellCurColor = Actor.eColor.None;
 
@@ -107,7 +108,9 @@ public class DecalsPost : Printer
                     var posY = Mathf.FloorToInt(position.y);
                     var posZ = Mathf.FloorToInt(position.z);
 
-                    Vector3 intPos = new Vector3(posX + 0.5f, position.y, posZ + 0.56f);
+                    intPos.x = posX + 0.5f;
+                    intPos.y = posY;
+                    intPos.z = posZ + 0.56f;
 
                     if (Mapping.map.ContainsKey(new Vector2(posX, posZ)))
                     {

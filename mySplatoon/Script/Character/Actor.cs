@@ -17,6 +17,7 @@ public class Actor : NetworkBehaviour
     [SerializeField] Image fillImage;
     [SerializeField] AudioSource shootAudio;
 
+    public LayerMask layer;
 
     Vector3 spawn;
 
@@ -28,6 +29,7 @@ public class Actor : NetworkBehaviour
     ScreenPost screenPost;
     ChooseWeapon choose;
 
+    Transform screenPoint;
     private Renderer render;
 
     public enum eColor
@@ -232,6 +234,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing1[i].materials[0].color = model.One_Purple;
                 }
+
                 break;
             case eColor.One_WarmYellow:
                 var ps2 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -271,6 +274,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing2[i].materials[0].color = model.One_WarmYellow;
                 }
+
                 break;
             case eColor.Two_LightBlue:
                 var ps3 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -310,6 +314,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing3[i].materials[0].color = model.Two_LightBlue;
                 }
+
                 break;
             case eColor.Two_ColdYellow:
                 var ps4 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -349,6 +354,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing4[i].materials[0].color = model.Two_ColdYellow;
                 }
+
                 break;
             case eColor.Three_Green_Blue:
                 var ps5 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -388,6 +394,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing5[i].materials[0].color = model.Three_Green_Blue;
                 }
+
                 break;
             case eColor.Three_Orange:
                 var ps6 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -427,6 +434,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing6[i].materials[0].color = model.Three_Orange;
                 }
+
                 break;
             case eColor.Four_Green_Yellow:
                 var ps7 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -466,6 +474,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing7[i].materials[0].color = model.Four_Green_Yellow;
                 }
+
                 break;
             case eColor.Four_Red_Purple:
                 var ps8 = model.GetComponentsInChildren<ParticleSystem>(true);
@@ -505,6 +514,7 @@ public class Actor : NetworkBehaviour
                 {
                     clothing8[i].materials[0].color = model.Four_Red_Purple;
                 }
+
                 break;
             default:
                 break;
@@ -606,7 +616,7 @@ public class Actor : NetworkBehaviour
 
     public void CheckIsDie()
     {
-        if (data.isDie == false && data.health <= 0)
+        if (data.isDie == false && data.health <= 0 || transform.position.y < -2)
         {
             data.isDie = true;
             animator.SetBool("Die", data.isDie);
@@ -651,7 +661,14 @@ public class Actor : NetworkBehaviour
     public void RotateWeapon(float v)
     {
         var Angles = v * 100 * Time.deltaTime;
-        model.muzzle.Rotate(Angles, 0, 0);
+        Vector2 p = new Vector2(Screen.width / 2, Screen.height / 2);
+        RaycastHit hit;
+        if(Physics.Raycast(Camera.main.ScreenPointToRay(p),out hit,Mathf.Infinity,layer))
+        {
+            model.muzzle.LookAt(hit.point);
+        }
+
+        CheckPosting(hit);
     }
     public void Jump()
     {
@@ -680,8 +697,6 @@ public class Actor : NetworkBehaviour
                 {
                     return;
                 }
-
-                animator.SetBool("Fire", state.isFire);
 
                 shootAudio.Play();
 
@@ -899,6 +914,7 @@ public class Actor : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            animator.SetBool("Fire", state.isFire);
             animator.SetBool("Die", data.isDie);
             animator.SetFloat("MoveSpeed", controller.v);
             animator.SetFloat("RightSpeed", controller.h);
@@ -918,5 +934,15 @@ public class Actor : NetworkBehaviour
         trans = Instantiate(model.transFX,transform);
         trans.gameObject.SetActive(true);
         Destroy(trans.gameObject, 2);
+    }
+
+    public void CheckPosting(RaycastHit hit)
+    {
+        if(hit.collider.tag == "Player")
+        {
+            state.isPosting = true;
+            var uiAnim = camera.GetComponentInChildren<Animator>();
+            uiAnim.SetBool("isPosting", state.isPosting);
+        }
     }
 }

@@ -10,6 +10,7 @@ public class ActorState : Actor
     public bool isFire = false;
     public bool isMove = false;
     public bool isCharging = false;
+    public bool isPosting = false;
 
     public eInkFish curFish = eInkFish.Human;
     public eColor curColor = eColor.None;

@@ -44,13 +44,13 @@ public class PlayerActorController : NetworkBehaviour
         }
 
  
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
             player.state.isFire = true;
 
         }
 
-        if (Input.GetMouseButtonUp(0))
+        if (!Input.GetMouseButton(0))
         {
             player.state.isFire = false;
              
@@ -102,6 +102,6 @@ public class PlayerActorController : NetworkBehaviour
 
         player.Move(v, h);
         player.Rotate(y);
-        //player.RotateWeapon(x);
+        player.RotateWeapon(x);
     }
 }
