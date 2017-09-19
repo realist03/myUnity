@@ -13,6 +13,7 @@ public class ActorModel : MonoBehaviour
     public GameObject punch;
 
     public GameObject mainVFX;
+    public GameObject powerVFX;
 
     public ParticleSystem runVFX;
     public ParticleSystem underAtk;

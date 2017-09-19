@@ -43,8 +43,6 @@ public class ActorState : Actor
         curWeapon = (eWeapon)GameMode.tempWeaponID;
         CmdWeapon(netId.Value, curWeapon);
 
-        CmdTeamId(netId.Value, data.TeamID);
-
         CheckAnim();
         CheckMapColor();
         CheckCurJumpState();
@@ -53,6 +51,7 @@ public class ActorState : Actor
         CheckPainted();
         CheckRunVFX();
         CheckIsDie();
+        CheckInkFish();
 
         if (controller.h != 0 || controller.v != 0)
         {
@@ -66,6 +65,7 @@ public class ActorState : Actor
 
     private void FixedUpdate()
     {
+        CmdTeamId(netId.Value, data.TeamID);
 
         if (isFire == true)
         {

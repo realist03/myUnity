@@ -100,6 +100,10 @@ public class PlayerActorController : NetworkBehaviour
             player.Cmd2Human();
         }
 
+        if(Input.GetKeyDown(KeyCode.Q))
+        {
+            player.UseSpecialWeapon();
+        }
         player.Move(v, h);
         player.Rotate(y);
         player.RotateWeapon(x);

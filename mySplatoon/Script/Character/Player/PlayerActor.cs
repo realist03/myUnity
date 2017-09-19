@@ -26,6 +26,11 @@ public class PlayerActor : Actor
             model.humanModel.SetActive(false);
             model.inkFishModel.SetActive(true);
             animator.SetBool("Trans", true);
+            Util.DelayCall(0.5f, () => 
+            {
+                var fish = model.inkFishModel.GetComponentInChildren<SkinnedMeshRenderer>();
+                fish.gameObject.SetActive(false);
+            });
         }
     }
     [Command]
@@ -43,6 +48,11 @@ public class PlayerActor : Actor
             model.humanModel.SetActive(false);
             model.inkFishModel.SetActive(true);
             animator.SetBool("Trans", true);
+            Util.DelayCall(0.5f, () =>
+            {
+                var fish = model.inkFishModel.GetComponentInChildren<SkinnedMeshRenderer>();
+                fish.gameObject.SetActive(false);
+            });
         }
     }
 

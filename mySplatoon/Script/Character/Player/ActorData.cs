@@ -18,6 +18,10 @@ public class ActorData : NetworkBehaviour
     [SyncVar] public float turnSpeed;
     [SyncVar] public float jumpHeight;
 
+    [SyncVar] public int points = 0;
+    [SyncVar] public int power = 0;
+    public int powerMax = 100;
+
     [HideInInspector] [SyncVar] public float shootTimer;
 
     public int TeamID;
@@ -31,9 +35,6 @@ public class ActorData : NetworkBehaviour
     public float rushJumpHeight;
 
     public float difSpeed;
-
-    public int power;
-    public int powerMax;
 
     public float splatterBlank;
     public float rollerBlank;

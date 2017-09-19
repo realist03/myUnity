@@ -73,7 +73,7 @@ public class DecalsPost : Printer
 
                 //Calculate final position and surface normal
                 RaycastHit hit;
-                if (Physics.Raycast(position, -normal, out hit, 1, layerMask))
+                if (Physics.Raycast(position, -normal, out hit, Mathf.Infinity, layerMask))
                 {
 
                     position = hit.point;
@@ -83,6 +83,12 @@ public class DecalsPost : Printer
                     Debug.Log("被打中" + hit.collider.name);
 
                     actor.AddFloorPost(position);
+
+                    if (hit.collider.gameObject == actor.gameObject)
+                    {
+                        i++;
+                        continue;
+                    }
 
                     if (hit.collider.tag == "Player")
                     {
@@ -128,6 +134,9 @@ public class DecalsPost : Printer
                                 post.Play();
                             if (Mapping.mapV != null && Mapping.mapV.Count != 0)
                             {
+                                actor.data.points+= 5;
+                                if (actor.data.power < actor.data.powerMax)
+                                    actor.data.power++;
                                 Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                             }
                         }
@@ -140,6 +149,9 @@ public class DecalsPost : Printer
                             post.Play();
                         if (Mapping.mapV != null&& Mapping.mapV.Count!=0)
                         {
+                            actor.data.points += 5;
+                            if(actor.data.power < actor.data.powerMax)
+                                actor.data.power++;
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
                     }

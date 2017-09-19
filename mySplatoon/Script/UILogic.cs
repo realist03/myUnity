@@ -11,6 +11,7 @@ public class UILogic : NetworkBehaviour
     public GameObject inkLow;
     public GameObject inkObj;
     public Slider reInk;
+    public Slider power;
 
     public Transform Bag;
 
@@ -42,5 +43,7 @@ public class UILogic : NetworkBehaviour
         }
         else
             inkLow.SetActive(false);
+
+        power.value = player.data.power;
 	}
 }

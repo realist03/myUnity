@@ -15,6 +15,8 @@ public class Actor : NetworkBehaviour
     [HideInInspector] public GameObject self;
 
     [SerializeField] Image fillImage;
+    [SerializeField] Image powerFillImage;
+
     [SerializeField] AudioSource shootAudio;
 
     public LayerMask layer;
@@ -221,11 +223,11 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.One_Purple;
-
+                powerFillImage.color = model.One_Purple;
                 model.inkBag.sharedMaterial = model.m_One_Purple;
 
 
-                var InkFish1 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish1 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing1 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish1.materials[0].color = model.One_Purple;
@@ -263,9 +265,10 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.One_WarmYellow;
+                powerFillImage.color = model.One_WarmYellow;
 
                 model.inkBag.sharedMaterial = model.m_One_WarmYellow;
-                var InkFish2 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish2 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing2 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish2.materials[0].color = model.One_WarmYellow;
@@ -303,9 +306,10 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.Two_LightBlue;
+                powerFillImage.color = model.Two_LightBlue;
 
                 model.inkBag.sharedMaterial = model.m_Two_LightBlue;
-                var InkFish3 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish3 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing3 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish3.materials[0].color = model.Two_LightBlue;
@@ -343,9 +347,10 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.Two_ColdYellow;
+                powerFillImage.color = model.Two_ColdYellow;
 
                 model.inkBag.sharedMaterial = model.m_Two_ColdYellow;
-                var InkFish4 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish4 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing4 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish4.materials[0].color = model.Two_ColdYellow;
@@ -383,9 +388,10 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.Three_Green_Blue;
+                powerFillImage.color = model.Three_Green_Blue;
 
                 model.inkBag.sharedMaterial = model.m_Three_Green_Blue;
-                var InkFish5 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish5 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing5 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish5.materials[0].color = model.Three_Green_Blue;
@@ -423,9 +429,10 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.Three_Orange;
+                powerFillImage.color = model.Three_Orange;
 
                 model.inkBag.sharedMaterial = model.m_Three_Orange;
-                var InkFish6 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish6 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing6 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish6.materials[0].color = model.Three_Orange;
@@ -463,9 +470,10 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.Four_Green_Yellow;
+                powerFillImage.color = model.Four_Green_Yellow;
 
                 model.inkBag.sharedMaterial = model.m_Four_Green_Yellow;
-                var InkFish7 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish7 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing7 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish7.materials[0].color = model.Four_Green_Yellow;
@@ -503,9 +511,10 @@ public class Actor : NetworkBehaviour
                 }
 
                 fillImage.color = model.Four_Red_Purple;
+                powerFillImage.color = model.Four_Red_Purple;
 
                 model.inkBag.sharedMaterial = model.m_Four_Red_Purple;
-                var InkFish8 = model.inkFishModel.GetComponentInChildren<Renderer>();
+                var InkFish8 = model.inkFishModel.GetComponentInChildren<Renderer>(true);
                 var clothing8 = model.clothing.GetComponentsInChildren<Renderer>();
 
                 InkFish8.materials[0].color = model.Four_Red_Purple;
@@ -643,6 +652,20 @@ public class Actor : NetworkBehaviour
         }
         else
             data.isInkLow = false;
+    }
+
+    public void CheckInkFish()
+    {
+        if(state.curFish == eInkFish.InkFish && state.isMove == true)
+        {
+            var fish = model.inkFishModel.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            fish.gameObject.SetActive(true);
+        }
+        else
+        {
+            var fish = model.inkFishModel.GetComponentInChildren<SkinnedMeshRenderer>(true);
+            fish.gameObject.SetActive(false);
+        }
     }
 
     public void Move(float v,float h)
@@ -943,6 +966,29 @@ public class Actor : NetworkBehaviour
             state.isPosting = true;
             var uiAnim = camera.GetComponentInChildren<Animator>();
             uiAnim.SetBool("isPosting", state.isPosting);
+        }
+    }
+
+    public void UseSubWeapon()
+    {
+
+    }
+
+    public void UseSpecialWeapon()
+    {
+        if(data.power >= 100)
+        {
+            data.power -= 100;
+
+            rigid.AddForce(new Vector3(0,5,0),ForceMode.Impulse);
+            animator.SetTrigger("Power");
+            Util.DelayCall(0.5f, () => 
+            {
+                GameObject spe;
+                spe = Instantiate(model.powerVFX, transform);
+                spe.SetActive(true);
+                Destroy(spe.gameObject, 3);
+            });
         }
     }
 }
