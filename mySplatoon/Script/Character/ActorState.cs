@@ -65,8 +65,6 @@ public class ActorState : Actor
 
     private void FixedUpdate()
     {
-        CmdTeamId(netId.Value, data.TeamID);
-
         if (isFire == true)
         {
             Shoot();

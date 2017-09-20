@@ -101,7 +101,12 @@ public class Actor : NetworkBehaviour
     public void Start()
     {
         gameObject.name = "Player" + (netId.Value-1);
-        Init();
+        Util.DelayCall(3, () =>
+        {
+            CmdTeamId(netId.Value, data.TeamID);
+            Init();
+        });
+
     }
 
     protected virtual void Init()
@@ -720,10 +725,12 @@ public class Actor : NetworkBehaviour
                 {
                     return;
                 }
+                if(isLocalPlayer)
+                {
+                    shootAudio.Play();
 
-                shootAudio.Play();
-
-                camera.ApplyRecoil(60, 0.2f);
+                    camera.ApplyRecoil(60, 0.2f);
+                }
                 data.shootTimer = 0;
                 data.ink -= data.shootCost;
 
@@ -744,7 +751,9 @@ public class Actor : NetworkBehaviour
 
                 animator.SetTrigger("Slash");
 
-                camera.ApplyRecoil(60, 0.2f);
+                if(isLocalPlayer)
+                    camera.ApplyRecoil(60, 0.2f);
+
                 data.shootTimer = 0;
                 data.ink -= data.rollerCost;
                 Util.DelayCall(0.5f, () => 
