@@ -135,8 +135,7 @@ public class DecalsPost : Printer
                             if (Mapping.mapV != null && Mapping.mapV.Count != 0)
                             {
                                 actor.data.points+= 5;
-                                if (actor.data.power < actor.data.powerMax)
-                                    actor.data.power++;
+                                actor.AddPower();
                                 Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                             }
                         }
@@ -150,8 +149,7 @@ public class DecalsPost : Printer
                         if (Mapping.mapV != null&& Mapping.mapV.Count!=0)
                         {
                             actor.data.points += 5;
-                            if(actor.data.power < actor.data.powerMax)
-                                actor.data.power++;
+                            actor.AddPower();
                             Print(intPos, Quaternion.LookRotation(-normal, rot), surface, hit.collider.gameObject.layer);
                         }
                     }

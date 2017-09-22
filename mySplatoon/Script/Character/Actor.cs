@@ -101,11 +101,15 @@ public class Actor : NetworkBehaviour
     public void Start()
     {
         gameObject.name = "Player" + (netId.Value-1);
-        Util.DelayCall(3, () =>
+
+        if(isLocalPlayer)
         {
-            CmdTeamId(netId.Value, data.TeamID);
-            Init();
-        });
+            Util.DelayCall(3, () =>
+            {
+                Init();
+                CmdTeamId(netId.Value, data.TeamID);
+            });
+        }
 
     }
 
@@ -904,7 +908,7 @@ public class Actor : NetworkBehaviour
     public void AddPower()
     {
         if(data.power < data.powerMax)
-            data.power += 10;
+            data.power += 1;
     }
 
     public void CheckRunVFX()

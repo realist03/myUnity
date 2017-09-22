@@ -30,7 +30,8 @@ public class ActorState : Actor
         if (!GameMode.isReady)
             return;
 
-        if(data.isDie == true)
+
+        if (data.isDie == true)
         {
             data.spawnTimer += Time.deltaTime;
         }
@@ -69,7 +70,6 @@ public class ActorState : Actor
         {
             Shoot();
         }
-
 
         RegenerateInk();
         RegenerateHealth();
